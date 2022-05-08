@@ -10,33 +10,33 @@ bg.y = 0;
 
 let player = world.createSprite(0, 0, 1);
 player.spriteSheet = loadImage(QuintOS.dir + "/img/player.png");
-
 player.addAni("idle", { size: [29, 29], frames: 4, delay: 6 });
 player.rotation = 90;
+// player.setCollider("circle");
+
+/* Spark shots */
+
+let sparks = world.createGroup();
+sparks.spriteSheet = loadImage(QuintOS.dir + "/img/spark.png");
+sparks.addAni("spark0", { line: 0, frames: 5, size: [64, 32] });
+sparks.spriteSheet = loadImage(QuintOS.dir + "/img/spark2.png");
+sparks.addAni("spark1", { line: 0, frames: 5, size: [64, 32] });
+
+for (let i = 0; i < 10; i++) {
+	let spark = sparks.createSprite("spark");
+	spark.rotation = -90;
+	spark.x = 1000;
+	spark.y = 1000;
+}
+
+/* Asteroids */
 
 let asteroids = world.createGroup();
 
-let sparks = world.createGroup();
-// shots.createSprite().addImage(loadImage(QuintOS.dir + "/img/shot-0.png"));
-// shots.createSprite().addImage(loadImage(QuintOS.dir + "/img/shot-1.png"));
-
-sparks.spriteSheet = loadImage(QuintOS.dir + "/img/spark.png");
-sparks.addAni("spark", { line: 0, frames: 5, size: [64, 32] });
-
-for (let i = 0; i < 10; i++) {
-	sparks.createSprite("spark").rotation = -90;
-}
-
-for (let i = 0; i < 5; i++) {
-	asteroids
-		.createSprite(-2, -2)
-		.addImage(loadImage(QuintOS.dir + "/img/asteroids/asteroid-" + i + ".png"));
-	// asteroid.setCollider("circle", -asteroid.w, -asteroid.h, 20);
-}
-
-let numbers = world.createGroup("numbers");
-numbers.spriteSheet = loadImage(QuintOS.dir + "/img/numbers.png");
-
-for (let i = 0; i < 10; i++) {
-	numbers.addImg("number" + i, { pos: [0, i], size: [8, 16] });
+for (let i = 0; i < 30; i++) {
+	let asteroid = asteroids.createSprite(-2, -2);
+	asteroid.addImage(
+		loadImage(QuintOS.dir + "/img/asteroids/asteroid-" + (i % 5) + ".png")
+	);
+	// asteroid.setCollider("circle");
 }
