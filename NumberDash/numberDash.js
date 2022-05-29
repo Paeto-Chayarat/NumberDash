@@ -1,14 +1,14 @@
 // set the initial animation and position for the player ship
-player.ani("idle");
-player.x = 160 - player.w / 2;
-player.y = 300;
+player.ani('idle');
+player.overlap(sparks);
+asteroids.overlap(asteroids);
 
 // init variables
 let sparkCount = 0;
 let objective = 0;
-let equation = "";
+let equation = '';
 let eqCount = 0;
-let mathSymbols = ["+", "-", "x", "÷"];
+let mathSymbols = ['+', '-', 'x', '÷'];
 
 // position asteroids
 for (let i = 0; i < asteroids.length; i++) {
@@ -21,7 +21,8 @@ eraseRect(0, 0, 28, 5);
 
 function placeAsteroid(asteroid) {
 	let placed = false;
-	while (!placed || asteroid.overlap(asteroids)) {
+	// while (!placed || asteroid.overlap(asteroids)) {
+	while (!placed) {
 		asteroid.x = Math.floor(Math.random() * 320);
 		asteroid.y = Math.floor(Math.random() * -400);
 		placed = true;
@@ -37,29 +38,31 @@ function placeAsteroid(asteroid) {
 
 function getObjective() {
 	objective = Math.floor(Math.random() * 100);
-	textRect(31, 1, 21, 3);
-	textRect(31, 22, 5, 3);
-	text("=" + objective, 32, 23);
+	textRect(31, 1, 3, 21);
+	textRect(31, 22, 3, 5);
+	text('=' + objective, 32, 23);
 }
 getObjective();
 
 function draw() {
-	player.x += (mouseX - player.w / 2 - player.x) * 0.1;
-	player.y += (mouseY - player.h / 2 - player.y) * 0.1;
+	image(bg, 0, 0);
 
-	if (isKeyDown("a")) {
+	player.moveTowards(mouseX, mouseY, 0.1);
+
+	if (isKeyDown('a')) {
 		player.rotation -= 5;
 	}
-	if (isKeyDown("d")) {
+	if (isKeyDown('d')) {
 		player.rotation += 5;
 	}
+	player.angularVelocity = 0;
 
-	player.collide(asteroids);
+	log(sparks[sparkCount].angularVelocity);
 
+	updateSprites();
 	drawSprites();
 
 	fill(255);
-
 	// draw asteroids
 	for (let i = 0; i < asteroids.length; i++) {
 		let asteroid = asteroids[i];
@@ -69,13 +72,18 @@ function draw() {
 		}
 		drawText(asteroid.data, asteroid.x + 7, asteroid.y + 10);
 	}
-
-	asteroids.overlap(sparks, explosion);
 }
 
-function explosion(asteroid, spark) {
+sparks.collide(asteroids, explosion);
+
+function explosion(spark, asteroid) {
 	spark.x = 1000;
 	spark.y = 1000;
+	spark.velocity.x = 0;
+	spark.velocity.y = 0;
+
+	asteroid.velocity.x = 0;
+	asteroid.velocity.y = 0.2;
 
 	console.log(asteroid);
 	let data = asteroid.data;
@@ -99,19 +107,13 @@ function mousePressed() {
 	spark.y = player.y;
 
 	spark.rotation = player.rotation + 180;
+	spark.fixedRotation = true;
 	spark.setSpeed(5, player.rotation + 180);
 
-	spark.ani("spark" + (eqCount % 2));
+	spark.ani('spark' + (eqCount % 2));
 	if (spark) sparkCount++;
 	if (sparkCount == 10) {
 		sparkCount = 0;
 	}
 	log(sparkCount);
 }
-
-// group.overlap(otherSprite, explosion);
-
-// function explosion(spriteA, spriteB) {
-//   spriteA.remove();
-//   spriteB.score++;
-// }
