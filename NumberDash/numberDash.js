@@ -23,6 +23,7 @@ let shouldShootNumber = true;
 let mathSymbols = ["+", "-", "x", "÷"];
 let time = 60;
 let health = 288;
+let runtime = true;
 
 // position asteroids
 function placeAsteroids() {
@@ -37,20 +38,24 @@ placeAsteroids();
 timer();
 
 async function timer() {
-	await delay(1000);
-	time--;
-	log(time);
-	text(time.toString().padStart(2, " "), 32, 24);
-	if (time == 0) {
-		gameOver();
-		return;
+	if (runtime) {
+		await delay(1000);
+		time--;
+		log(time);
+		text(time.toString().padStart(2, " "), 32, 24);
+		if (time == 0) {
+			gameOver();
+			return;
+		}
+		timer();
 	}
-	timer();
 }
 
 eraseRect(0, 0, 28, 5);
 
 async function gameOver() {
+	time = 1;
+	runtime = false;
 	await alert("Game Over. Try Again?");
 	setObjective();
 	shouldShootNumber = true;
@@ -59,6 +64,7 @@ async function gameOver() {
 	text(" ".repeat(15), 32, 2);
 	time = 60;
 	health = 288;
+	runtime = true;
 	timer();
 }
 
@@ -191,3 +197,6 @@ function mousePressed() {
 	}
 	log(sparkCount);
 }
+
+//make erase astroids
+// when time exceeds 100 the last digit is permanent
