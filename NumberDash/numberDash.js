@@ -18,11 +18,11 @@ player.collide(asteroids, (player, asteroid) => {
 // init variables
 let sparkCount = 0;
 let objective = 10;
-let equation = "";
+let equation = [];
 let shouldShootNumber = true;
 let mathSymbols = ["+", "-", "x", "÷"];
 let time = 60;
-let health = 288;
+let health = 312;
 let runtime = true;
 let isPlaying = false;
 let symbolRange = 2;
@@ -34,7 +34,10 @@ function placeAsteroids() {
 	for (let i = 0; i < asteroids.length; i++) {
 		let asteroid = asteroids[i];
 		placeAsteroid(asteroid);
+		asteroid.velocity.x = random(-0.1, 0.1);
 		asteroid.velocity.y = 0.8;
+		asteroid.rotation = random(0, 360);
+		asteroid.rotationSpeed = random(-1, 1);
 	}
 }
 
@@ -42,8 +45,7 @@ async function timer() {
 	if (runtime) {
 		await delay(1000);
 		time--;
-		log(time);
-		text(time.toString().padStart(2, " "), 32, 24);
+		text(time.toString().padStart(3, " "), 32, 24);
 		if (time == 0) {
 			gameOver();
 			return;
@@ -59,7 +61,7 @@ async function gameOver() {
 	setObjective();
 	shouldShootNumber = true;
 	placeAsteroids();
-	equation = "";
+	equation = [];
 	text(" ".repeat(15), 32, 2);
 	time = 60;
 	health = 288;
@@ -69,9 +71,9 @@ async function gameOver() {
 
 function nextNumber() {
 	shouldShootNumber = false;
-	equation = objective;
-	text(" ".repeat(15), 32, 2); // erase
-	text(equation, 32, 2);
+	equation = [objective];
+	text(" ".repeat(15), 32, 1); // erase
+	text(equation.join(""), 32, 1);
 	setObjective();
 	time += 30;
 }
@@ -89,7 +91,6 @@ function placeAsteroid(asteroid) {
 		asteroid.data = Math.floor(Math.random() * 10);
 	} else {
 		asteroid.data = mathSymbols[Math.floor(Math.random() * symbolRange)];
-		log(asteroid.data);
 	}
 }
 
@@ -103,10 +104,10 @@ function setObjective() {
 			objective = Math.floor(Math.random() * 100);
 		}
 	}
-	textRect(31, 1, 3, 17);
-	textRect(31, 18, 3, 5);
-	textRect(31, 23, 3, 4);
-	text("=" + objective, 32, 19);
+	textRect(31, 0, 3, 17);
+	textRect(31, 17, 3, 6);
+	textRect(31, 23, 3, 5);
+	text(("=" + objective).padEnd(3, " "), 32, 18);
 }
 
 async function startGame() {
@@ -120,12 +121,14 @@ async function startGame() {
 
 function mainMenu() {
 	text("Number Dash", 5, 5);
-	button("Add/Subtract", 7, 5, () => {
-		symbolRange = 2; //sets it to -/+
+	text("Select Game Mode", 7, 5);
+
+	button("Add and Subtract", 10, 5, () => {
+		symbolRange = 2; // sets it to -/+
 		startGame();
 	});
-	button("+/-/x/÷", 9, 5, () => {
-		symbolRange = 4; //sets it to -/+/x/÷
+	button("Add, Subtract, Multiply, and Divide", 12, 5, () => {
+		symbolRange = 4; // sets it to -/+/x/÷
 		startGame();
 	});
 }
@@ -138,7 +141,7 @@ function draw() {
 		if (health <= 0 || time <= 0) return;
 
 		fill(255, 80, 70);
-		rect(16, 360, health, 3);
+		rect(4, 360, health, 3);
 
 		player.moveTowards(mouseX, mouseY, 0.1);
 
@@ -181,7 +184,7 @@ function explosion(spark, asteroid) {
 	asteroid.velocity.x = 0;
 	asteroid.velocity.y = 0.2;
 
-	console.log(asteroid);
+	log(asteroid);
 	let data = asteroid.data;
 
 	if (data == "") {
@@ -196,14 +199,13 @@ function explosion(spark, asteroid) {
 		return;
 	}
 	shouldShootNumber = !shouldShootNumber;
-	equation += data;
-	text(equation, 32, 2);
+	equation.push(data);
+	text(equation.join(""), 32, 1);
 
-	let jsEq = equation.replaceAll("x", "*").replaceAll("÷", "/");
-	let endsWithNumber = /[0-9]/.test(jsEq[jsEq.length - 1]);
-	if (endsWithNumber && eval(jsEq) == objective) {
+	if (gotObjective()) {
 		nextNumber();
 	}
+
 	placeAsteroid(asteroid);
 }
 
@@ -214,7 +216,7 @@ function mousePressed() {
 		spark.y = player.y;
 
 		spark.rotation = player.rotation + 180;
-		spark.fixedRotation = true;
+		spark.rotationLocked = true;
 		spark.setSpeed(5, player.rotation + 180);
 
 		// ternary condition, used to write if + else  on one line
@@ -223,9 +225,29 @@ function mousePressed() {
 		if (sparkCount == 10) {
 			sparkCount = 0;
 		}
-		log(sparkCount);
 	}
 }
 
 //make erase astroids
 // when time exceeds 100 the last digit is permanent
+
+function gotObjective() {
+	// create new array with contents of the equation array
+	// so that we can edit it without changing the equation array
+	if (!mathSymbols.includes(equation[equation.length - 1])) {
+		let jsEq = [...equation];
+		for (let i = 1; i < jsEq.length; i += 2) {
+			if (jsEq[i] == "÷") {
+				let result = Math.round(jsEq[i - 1] / jsEq[i + 1]);
+				jsEq.splice(i - 1, 3, result);
+			}
+			if (jsEq[i] == "x") {
+				jsEq[i] = "*";
+			}
+		}
+
+		if (eval(jsEq.join("")) == objective) {
+			return true;
+		}
+	}
+}

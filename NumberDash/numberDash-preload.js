@@ -9,6 +9,7 @@ player.layer = 1;
 player.spriteSheet = loadImage(QuintOS.dir + "/img/player.png");
 player.addAni("idle", { size: [29, 29], frames: 4, delay: 6 });
 player.rotation = 90;
+player.rotationLocked = true;
 // player.setCollider("circle");
 
 /* Spark shots */
