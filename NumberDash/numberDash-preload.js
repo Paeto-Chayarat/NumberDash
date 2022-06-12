@@ -4,7 +4,7 @@ let world = new World(0, 0);
 
 let bg = loadImage(QuintOS.dir + "/img/blue-background/blue-back.png");
 
-let player = new Sprite(4, 4, 32);
+let player = new Sprite(150, 300, 32);
 player.layer = 1;
 player.spriteSheet = loadImage(QuintOS.dir + "/img/player.png");
 player.addAni("idle", { size: [29, 29], frames: 4, delay: 6 });
