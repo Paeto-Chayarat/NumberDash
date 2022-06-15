@@ -5,13 +5,18 @@ player.overlap(explosions);
 explosions.overlap(asteroids);
 asteroids.overlap(asteroids);
 
-player.collide(asteroids, (player, asteroid) => {
-	placeAsteroid(asteroid);
-	let explosion = explosions.sprite("default", player.x, player.y);
-	explosion.life = 20;
-	health -= 42;
-	if (health < 0) {
-		gameOver();
+player.ghostTime = 0;
+
+player.overlap(asteroids, (player, asteroid) => {
+	if (player.ghostTime == 0) {
+		placeAsteroid(asteroid);
+		let explosion = explosions.sprite("default", player.x, player.y);
+		explosion.life = 20;
+		health -= 42;
+		player.ghostTime = 180;
+		if (health < 0) {
+			gameOver();
+		}
 	}
 });
 
@@ -135,8 +140,30 @@ function mainMenu() {
 
 mainMenu();
 
+let starsOpacity = 255;
+let starsShine = false;
+
 function draw() {
-	image(bg, 0, 0);
+	if (player.ghostTime > 0) {
+		player.ghostTime--;
+	}
+	image(bg, 0, 0, 320, 544);
+	push();
+	tint(255, starsOpacity);
+	if (starsOpacity <= 140) {
+		starsShine = true;
+	}
+	if (starsOpacity >= 255) {
+		starsShine = false;
+	}
+	if (starsShine) {
+		starsOpacity += 3;
+	} else {
+		starsOpacity -= 2;
+	}
+
+	image(stars, 0, 0, 320, 544);
+	pop();
 	if (isPlaying) {
 		if (health <= 0 || time <= 0) return;
 
@@ -158,7 +185,18 @@ function draw() {
 		player.angularVelocity = 0;
 
 		updateSprites();
-		drawSprites();
+		planet.display();
+		drawSprites(asteroids);
+		drawSprites(sparks);
+
+		push();
+		if (player.ghostTime > 0 && frameCount % 30 < 15) {
+			tint(255, 128);
+		}
+
+		player.display();
+		drawSprites(explosions);
+		pop();
 
 		fill(255);
 		// draw asteroid data
@@ -228,9 +266,6 @@ function mousePressed() {
 	}
 }
 
-//make erase astroids
-// when time exceeds 100 the last digit is permanent
-
 function gotObjective() {
 	// create new array with contents of the equation array
 	// so that we can edit it without changing the equation array
@@ -240,8 +275,8 @@ function gotObjective() {
 			if (jsEq[i] == "÷") {
 				let result = Math.round(jsEq[i - 1] / jsEq[i + 1]);
 				jsEq.splice(i - 1, 3, result);
-			}
-			if (jsEq[i] == "x") {
+				i -= 2;
+			} else if (jsEq[i] == "x") {
 				jsEq[i] = "*";
 			}
 		}

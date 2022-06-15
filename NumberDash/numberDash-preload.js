@@ -3,10 +3,17 @@ let world = new World(0, 0);
 // world.offsetY = 40;
 
 let bg = loadImage(QuintOS.dir + "/img/blue-background/blue-back.png");
-let planet = loadImage(
-	QuintOS.dir + "/img/blue-background/prop-planet-big.png"
-);
 let stars = loadImage(QuintOS.dir + "/img/blue-background/blue-stars.png");
+
+let planet = new Sprite(
+	loadImage(QuintOS.dir + "/img/blue-background/prop-planet-big.png"),
+	50,
+	20,
+	"none"
+);
+planet.vel.y = 0.01;
+planet.scale = 2;
+planet.layer = 0;
 
 let player = new Sprite(150, 300, 32);
 player.layer = 1;
@@ -34,7 +41,8 @@ for (let i = 0; i < 10; i++) {
 let asteroids = new Group();
 
 for (let i = 0; i < 60; i++) {
-	let asteroid = asteroids.sprite(i * 40, -2, 20);
+	let asteroid = asteroids.sprite(i * 40, -20, 20);
+	asteroid.layer = 1;
 	asteroid.addImage(
 		loadImage(QuintOS.dir + "/img/asteroids/asteroid-" + (i % 5) + ".png")
 	);
