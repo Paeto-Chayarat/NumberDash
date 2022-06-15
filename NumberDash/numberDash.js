@@ -161,7 +161,7 @@ function draw() {
 		drawSprites();
 
 		fill(255);
-		// draw asteroids
+		// draw asteroid data
 		for (let i = 0; i < asteroids.length; i++) {
 			let asteroid = asteroids[i];
 			// recycle asteroids that get placed off screen

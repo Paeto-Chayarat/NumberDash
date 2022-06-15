@@ -3,6 +3,10 @@ let world = new World(0, 0);
 // world.offsetY = 40;
 
 let bg = loadImage(QuintOS.dir + "/img/blue-background/blue-back.png");
+let planet = loadImage(
+	QuintOS.dir + "/img/blue-background/prop-planet-big.png"
+);
+let stars = loadImage(QuintOS.dir + "/img/blue-background/blue-stars.png");
 
 let player = new Sprite(150, 300, 32);
 player.layer = 1;
