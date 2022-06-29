@@ -10,12 +10,13 @@ player.ghostTime = 0;
 player.overlap(asteroids, (player, asteroid) => {
 	if (player.ghostTime == 0) {
 		placeAsteroid(asteroid);
+		play(crashSound);
 		let explosion = explosions.sprite("default", player.x, player.y);
 		explosion.life = 20;
 		health -= 42;
 		player.ghostTime = 180;
 		if (health < 0) {
-			gameOver();
+			gameOver("You got hit too many times, your ship was destroyed.");
 		}
 	}
 });
@@ -25,53 +26,56 @@ let sparkCount = 0;
 let objective = 10;
 let equation = [];
 let shouldShootNumber = true;
-let mathSymbols = ["+", "-", "x", "÷"];
+let mathSymbols;
 let time = 60;
 let health = 312;
-let runtime = true;
 let isPlaying = false;
-let symbolRange = 2;
+let mode;
+let symbOrNum;
+let moreBg = true;
 
 eraseRect(0, 0, 28, 5);
 
 // position asteroids
 function placeAsteroids() {
+	// for (let i = 0; i < allAsteroids.length; i++) {
+	// 	placeAsteroid(allAsteroids[i]);
+	// }
 	for (let i = 0; i < asteroids.length; i++) {
-		let asteroid = asteroids[i];
-		placeAsteroid(asteroid);
-		asteroid.velocity.x = random(-0.1, 0.1);
-		asteroid.velocity.y = 0.8;
-		asteroid.rotation = random(0, 360);
-		asteroid.rotationSpeed = random(-1, 1);
+		placeAsteroid(asteroids[i]);
+	}
+	for (let i = 0; i < bgAsteroids.length; i++) {
+		placeAsteroid(bgAsteroids[i]);
+	}
+	for (let i = 0; i < frAsteroids.length; i++) {
+		placeAsteroid(frAsteroids[i]);
 	}
 }
 
 async function timer() {
-	if (runtime) {
-		await delay(1000);
-		time--;
-		text(time.toString().padStart(3, " "), 32, 24);
-		if (time == 0) {
-			gameOver();
-			return;
-		}
-		timer();
+	text(time.toString().padStart(3, " "), 32, 24);
+	await delay(1000);
+	time--;
+	if (!isPlaying) return;
+	if (time == 0) {
+		gameOver("You ran out of time!");
+		return;
 	}
+	timer();
 }
 
-async function gameOver() {
+async function gameOver(msg) {
+	play(gameOverSound);
+	isPlaying = false;
 	time = 1;
-	runtime = false;
-	await alert("Game Over. Try Again?");
-	setObjective();
-	shouldShootNumber = true;
-	placeAsteroids();
-	equation = [];
-	text(" ".repeat(15), 32, 2);
-	time = 60;
-	health = 288;
-	runtime = true;
-	timer();
+	await alert(msg + " Game Over. Try Again?");
+	startGame();
+}
+
+async function gameWon(msg) {
+	isPlaying = false;
+	time = 1;
+	await alert(msg + "You Won! Try doing the next lvl!");
 }
 
 function nextNumber() {
@@ -79,8 +83,15 @@ function nextNumber() {
 	equation = [objective];
 	text(" ".repeat(15), 32, 1); // erase
 	text(equation.join(""), 32, 1);
+
+	if (mode == "add" && objective == 100) {
+		gameWon();
+		return;
+	}
+
 	setObjective();
 	time += 30;
+	health += 21;
 }
 
 function placeAsteroid(asteroid) {
@@ -92,10 +103,27 @@ function placeAsteroid(asteroid) {
 		placed = true;
 	}
 
-	if (Math.random() < 0.5) {
-		asteroid.data = Math.floor(Math.random() * 10);
-	} else {
-		asteroid.data = mathSymbols[Math.floor(Math.random() * symbolRange)];
+	if (asteroids.includes(asteroid)) {
+		if (Math.random() < symbOrNum) {
+			asteroid.data = Math.floor(Math.random() * 10);
+		} else {
+			asteroid.data =
+				mathSymbols[Math.floor(Math.random() * mathSymbols.length)];
+		}
+		asteroid.velocity.x = random(-0.1, 0.1);
+		asteroid.velocity.y = 0.8;
+		asteroid.rotation = random(0, 360);
+		asteroid.rotationSpeed = random(-1, 1);
+	} else if (bgAsteroids.includes(asteroid)) {
+		asteroid.velocity.x = random(-0.1, 0.1);
+		asteroid.velocity.y = 0.4;
+		asteroid.rotation = random(0, 360);
+		asteroid.rotationSpeed = random(-1, 1);
+	} else if (frAsteroids.includes(asteroid)) {
+		asteroid.velocity.x = random(-0.1, 0.1);
+		asteroid.velocity.y = 1.2;
+		asteroid.rotation = random(0, 360);
+		asteroid.rotationSpeed = random(-1, 1);
 	}
 }
 
@@ -103,37 +131,111 @@ function setObjective() {
 	// TODO don't let it pick the same number
 	let prevObjective = objective;
 	while (objective == prevObjective) {
-		if (symbolRange == 2) {
+		if (mode == "add & subtract") {
 			objective += Math.floor(Math.random() * 40 - 20);
+		} else if (mode == "add") {
+			objective += Math.floor(Math.random() * 20);
+		} else if (mode == "subtract") {
+			objective -= Math.floor(Math.random() * 20);
 		} else {
 			objective = Math.floor(Math.random() * 100);
+		}
+		if (objective > 100 && mode == "add") {
+			objective = 100;
 		}
 	}
 	textRect(31, 0, 3, 17);
 	textRect(31, 17, 3, 6);
 	textRect(31, 23, 3, 5);
-	text(("=" + objective).padEnd(3, " "), 32, 18);
+	text(("=" + objective).padEnd(4, " "), 32, 18);
 }
 
 async function startGame() {
-	erase();
+	text(" ".repeat(15), 32, 1);
 	placeAsteroids();
-	timer();
+	if (moreBg) {
+		if (mode == "add") {
+			let planet = new Sprite(themes.blue.planet, 50, 20, "none");
+			planet.vel.y = 0.01;
+			planet.scale = 2;
+			planet.layer = 0;
+			bgProps.add(planet);
+		}
+
+		if (mode == "subtract") {
+			theme = "green";
+
+			let planet = new Sprite(themes.green.planet, 50, 20, "none");
+			planet.layer = 0;
+			planet.vel.x = 0.02;
+			planet.vel.y = 0.005;
+			bgProps.add(planet);
+
+			let planet1 = new Sprite(themes.green.planet1, 100, 300, "none");
+			planet1.layer = 0;
+			planet1.scale = 1.5;
+			planet1.vel.x = 0.01;
+			planet1.vel.y = 0.01;
+			bgProps.add(planet1);
+
+			let ring = new Sprite(themes.green.ring, 200, 150, "none");
+			ring.layer = 0;
+			ring.scale = 2;
+			ring.vel.y = 0.005;
+			bgProps.add(ring);
+
+			equation = [100];
+			objective = 100;
+			shouldShootNumber = false;
+			text(equation.join(""), 32, 1);
+		} else {
+			equation = [];
+			objective = 0;
+			shouldShootNumber = true;
+		}
+	}
+	moreBg = false;
 	setObjective();
+	time = 60;
+	health = 288;
+
 	await delay(1000);
 	isPlaying = true;
+	timer();
 }
 
 function mainMenu() {
 	text("Number Dash", 5, 5);
 	text("Select Game Mode", 7, 5);
 
-	button("Add and Subtract", 10, 5, () => {
-		symbolRange = 2; // sets it to -/+
+	button("Addition", 9, 5, () => {
+		mode = "add";
+		mathSymbols = ["+"];
+		symbOrNum = 0.7;
+		erase();
 		startGame();
 	});
-	button("Add, Subtract, Multiply, and Divide", 12, 5, () => {
-		symbolRange = 4; // sets it to -/+/x/÷
+
+	button("Subtract", 11, 5, () => {
+		mode = "subtract";
+		mathSymbols = ["-"];
+		symbOrNum = 0.7;
+		erase();
+		startGame();
+	});
+
+	button("Add and Subtract", 13, 5, () => {
+		mode = "add & subtract";
+		mathSymbols = ["+", "-"];
+		symbOrNum = 0.5;
+		erase();
+		startGame();
+	});
+	button("Add, Subtract, Multiply, and Divide", 15, 5, () => {
+		mode = "all";
+		mathSymbols = ["+", "-", "x", "÷"];
+		symbOrNum = 0.5;
+		erase();
 		startGame();
 	});
 }
@@ -147,7 +249,7 @@ function draw() {
 	if (player.ghostTime > 0) {
 		player.ghostTime--;
 	}
-	image(bg, 0, 0, 320, 544);
+	image(themes[theme].bg, 0, 0, 320, 544);
 	push();
 	tint(255, starsOpacity);
 	if (starsOpacity <= 140) {
@@ -162,7 +264,7 @@ function draw() {
 		starsOpacity -= 2;
 	}
 
-	image(stars, 0, 0, 320, 544);
+	image(themes[theme].stars, 0, 0, 320, 544);
 	pop();
 	if (isPlaying) {
 		if (health <= 0 || time <= 0) return;
@@ -185,7 +287,13 @@ function draw() {
 		player.angularVelocity = 0;
 
 		updateSprites();
-		planet.display();
+		drawSprites(bgProps);
+
+		push();
+		tint(200);
+		drawSprites(bgAsteroids);
+		pop();
+
 		drawSprites(asteroids);
 		drawSprites(sparks);
 
@@ -208,6 +316,17 @@ function draw() {
 			}
 			drawText(asteroid.data, asteroid.x, asteroid.y);
 		}
+		for (let asteroid of bgAsteroids) {
+			if (asteroid.y > 460) {
+				placeAsteroid(asteroid);
+			}
+		}
+		for (let asteroid of frAsteroids) {
+			if (asteroid.y > 460) {
+				placeAsteroid(asteroid);
+			}
+		}
+		drawSprites(frAsteroids);
 	}
 }
 
@@ -231,14 +350,21 @@ function explosion(spark, asteroid) {
 	}
 
 	if (isNaN(data) && shouldShootNumber) {
+		play(wrongHitSound);
 		return;
 	}
 	if (!isNaN(data) && !shouldShootNumber) {
+		play(wrongHitSound);
 		return;
 	}
+	play(hitSound);
 	shouldShootNumber = !shouldShootNumber;
 	equation.push(data);
 	text(equation.join(""), 32, 1);
+	if (equation.length > 14) {
+		// if there is too many numers on eq box
+		gameOver("Your equation is too long.");
+	}
 
 	if (gotObjective()) {
 		nextNumber();
@@ -250,6 +376,7 @@ function explosion(spark, asteroid) {
 function mousePressed() {
 	if (isPlaying) {
 		let spark = sparks[sparkCount];
+		play(shootSound);
 		spark.x = player.x - 4;
 		spark.y = player.y;
 
@@ -281,8 +408,15 @@ function gotObjective() {
 			}
 		}
 
-		if (eval(jsEq.join("")) == objective) {
+		let result = eval(jsEq.join(""));
+		if (result == objective) {
 			return true;
+		}
+		if (mode == "add" && result > objective) {
+			gameOver("The result of your equation is higher than the objective.");
+		}
+		if (mode == "subtract" && result < objective) {
+			gameOver("The result of your equation is lower than the objective.");
 		}
 	}
 }
