@@ -400,7 +400,7 @@ function draw() {
 			tint(255, 128);
 		}
 
-		player.display();
+		player.draw();
 		explosions.draw();
 		pop();
 
