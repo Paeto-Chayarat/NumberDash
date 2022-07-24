@@ -5,7 +5,7 @@ let shootSound = loadSound(soundDir + "/shoot.wav");
 let hitSound = loadSound(soundDir + "/gotNumber.wav");
 let wrongHitSound = loadSound(soundDir + "/wrongHit.wav");
 let gameOverSound = loadSound(soundDir + "/gameOver.wav");
-let world = new World(0, 0);
+// let world = new World(0, 0);
 // world.offsetX = 10;
 // world.offsetY = 40;
 
@@ -26,7 +26,24 @@ themes.green = {
 	planet1: loadImage(QuintOS.dir + "/img/green-background/blue-planet.png"),
 };
 
+themes.desert = {
+	bg: loadImage(QuintOS.dir + "/img/desert-background/desert-background.png"),
+	clouds: loadImage(QuintOS.dir + "/img/desert-background/clouds.png"),
+	tpClouds: loadImage(
+		QuintOS.dir + "/img/desert-background/clouds-transparent.png"
+	),
+};
+
+themes.orange = {
+	bg: loadImage(QuintOS.dir + "/img/orange-background/orange-back.png"),
+	stars: loadImage(QuintOS.dir + "/img/orange-background/orange-stars.png"),
+	planet1: loadImage(QuintOS.dir + "/img/orange-background/planet-1.png"),
+	planet2: loadImage(QuintOS.dir + "/img/orange-background/planet-2.png"),
+};
+
 let bgProps = new Group();
+bgProps.layer = 0;
+bgProps.collider = "none";
 
 let player = new Sprite(150, 300, 32);
 player.layer = 1;
@@ -43,10 +60,11 @@ sparks.spriteSheet = loadImage(QuintOS.dir + "/img/spark.png");
 sparks.addAni("spark0", { line: 0, frames: 5, size: [64, 32] });
 sparks.spriteSheet = loadImage(QuintOS.dir + "/img/spark2.png");
 sparks.addAni("spark1", { line: 0, frames: 5, size: [64, 32] });
+sparks.rotation = -90;
+sparks.rotationLocked = true;
 
 for (let i = 0; i < 10; i++) {
-	let spark = sparks.sprite("spark0", 1000, 1000, 2, 2);
-	spark.rotation = -90;
+	new sparks.Sprite("spark0", 1000, 1000, 2, 2);
 }
 
 /* Asteroids */
@@ -59,28 +77,26 @@ for (let i = 0; i < 5; i++) {
 	);
 }
 
-let asteroids = allAsteroids.subGroup();
+let asteroids = new allAsteroids.Group();
 asteroids.layer = 1;
 for (let i = 0; i < 60; i++) {
-	asteroids.sprite("atd" + (i % 5), i * 40, -20, 20);
+	new asteroids.Sprite("atd" + (i % 5), i * 40, -20, 20);
 }
 
-let bgAsteroids = asteroids.subGroup();
+let bgAsteroids = new allAsteroids.Group();
 bgAsteroids.layer = 0;
 bgAsteroids.collider = "none";
-// bgAsteroids.scale = 0.5;
+bgAsteroids.scale = 0.5;
 for (let i = 0; i < 50; i++) {
-	let bga = bgAsteroids.sprite("atd" + (i % 5), i * 40, -20, 20);
-	bga.scale = 0.5;
+	new bgAsteroids.Sprite("atd" + (i % 5), i * 40, -20, 20);
 }
 
-let frAsteroids = asteroids.subGroup();
+let frAsteroids = new allAsteroids.Group();
 frAsteroids.layer = 2;
 frAsteroids.collider = "none";
-// frAsteroids.scale = 2;
+frAsteroids.scale = 2;
 for (let i = 0; i < 5; i++) {
-	let fra = frAsteroids.sprite("atd" + (i % 5), i * 40, -20, 20);
-	fra.scale = 2;
+	new frAsteroids.Sprite("atd" + (i % 5), i * 40, -20, 20);
 }
 
 let explosions = new Group();
