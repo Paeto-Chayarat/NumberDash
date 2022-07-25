@@ -1,9 +1,5 @@
-let superNums = "⁰¹²³⁴⁵⁶⁷⁸⁹";
-let subNums = "₀₁₂₃₄₅₆₇₈₉";
-let simpleFractions = "½⅓⅔¼¾⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞";
-
 // set the initial animation and position for the player ship
-player.ani("idle");
+player.ani('idle');
 player.overlap(sparks);
 player.overlap(explosions);
 explosions.overlap(asteroids);
@@ -15,12 +11,12 @@ player.overlap(asteroids, (player, asteroid) => {
 	if (player.ghostTime == 0) {
 		placeAsteroid(asteroid);
 		play(crashSound);
-		let explosion = new explosions.Sprite("default", player.x, player.y);
+		let explosion = new explosions.Sprite('default', player.x, player.y);
 		explosion.life = 20;
 		health -= 42;
 		player.ghostTime = 180;
 		if (health < 0) {
-			gameOver("You got hit too many times, your ship was destroyed.");
+			gameOver('You got hit too many times, your ship was destroyed.');
 		}
 	}
 });
@@ -38,9 +34,7 @@ let isPaused = false;
 let mode;
 let symbOrNum;
 let moreBg = true;
-let numMode = "num";
-
-eraseRect(0, 0, 28, 5);
+let numMode = 'num';
 
 // position asteroids
 function placeAsteroids() {
@@ -59,12 +53,12 @@ function placeAsteroids() {
 }
 
 async function timer() {
-	text(time.toString().padStart(3, " "), 32, 24);
+	text(time.toString().padStart(3, ' '), 32, 24);
 	await delay(1000);
 	time--;
 	if (!isInGame) return;
 	if (time == 0) {
-		gameOver("You ran out of time!");
+		gameOver('You ran out of time!');
 		return;
 	}
 	timer();
@@ -74,14 +68,14 @@ async function gameOver(msg) {
 	play(gameOverSound);
 	isInGame = false;
 	time = 1;
-	await alert(msg + " Game Over. Try Again?");
+	await alert(msg + ' Game Over. Try Again?');
 	startGame();
 }
 
 async function gameWon(msg) {
 	isInGame = false;
 	time = 1;
-	await alert(msg + "You Won! Try doing the next lvl!");
+	await alert(msg + 'You Won! Try doing the next lvl!');
 }
 
 function nextNumber() {
@@ -90,7 +84,7 @@ function nextNumber() {
 
 	displayEquation();
 
-	if (mode == "add" && objective == 100) {
+	if (mode == 'add' && objective == 100) {
 		gameWon();
 		return;
 	}
@@ -107,28 +101,25 @@ function nextNumber() {
 }
 
 function changeAsteroidData(asteroid) {
-	if (mode == "add & subtract" && numMode == "fraction") {
+	if (mode == 'add & subtract' && numMode == 'fraction') {
 		if (Math.random() < symbOrNum) {
 			let chance = Math.random();
 			if (chance < 0.5) {
 				//make denominater near goal
-				asteroid.data =
-					Math.floor(Math.random() * 7) + "\n" + Math.ceil(Math.random() * 5);
+				asteroid.data = Math.floor(Math.random() * 7) + '\n' + Math.ceil(Math.random() * 5);
 			} else if (equation.length && chance < 0.75) {
-				asteroid.data = Math.floor(Math.random() * 7) + "\n" + equation[0][2];
+				asteroid.data = Math.floor(Math.random() * 7) + '\n' + equation[0][2];
 			} else {
-				asteroid.data = Math.floor(Math.random() * 7) + "\n" + objective[2];
+				asteroid.data = Math.floor(Math.random() * 7) + '\n' + objective[2];
 			}
 		} else {
-			asteroid.data =
-				mathSymbols[Math.floor(Math.random() * mathSymbols.length)];
+			asteroid.data = mathSymbols[Math.floor(Math.random() * mathSymbols.length)];
 		}
 	} else {
 		if (Math.random() < symbOrNum) {
 			asteroid.data = Math.floor(Math.random() * 10);
 		} else {
-			asteroid.data =
-				mathSymbols[Math.floor(Math.random() * mathSymbols.length)];
+			asteroid.data = mathSymbols[Math.floor(Math.random() * mathSymbols.length)];
 		}
 	}
 }
@@ -165,45 +156,44 @@ function setObjective() {
 	// TODO don't let it pick the same number
 	let prevObjective = objective;
 	while (objective == prevObjective) {
-		if (mode == "add & subtract" && numMode == "num") {
+		if (mode == 'add & subtract' && numMode == 'num') {
 			objective += Math.floor(Math.random() * 40 - 20);
-		} else if (mode == "add & subtract" && numMode == "fraction") {
-			objective =
-				Math.floor(Math.random() * 7) + "/" + Math.ceil(Math.random() * 5);
-		} else if (mode == "add") {
+		} else if (mode == 'add & subtract' && numMode == 'fraction') {
+			objective = Math.floor(Math.random() * 7) + '/' + Math.ceil(Math.random() * 5);
+		} else if (mode == 'add') {
 			objective += Math.floor(Math.random() * 20);
-		} else if (mode == "subtract") {
+		} else if (mode == 'subtract') {
 			objective -= Math.floor(Math.random() * 20);
 		} else {
 			objective = Math.floor(Math.random() * 100);
 		}
-		if (objective > 100 && mode == "add") {
+		if (objective > 100 && mode == 'add') {
 			objective = 100;
 		}
 	}
-	if (numMode != "fraction") {
+	if (numMode != 'fraction') {
 		textRect(31, 0, 3, 17);
 		textRect(31, 17, 3, 6);
 		textRect(31, 23, 3, 5);
-		text(("=" + objective).padEnd(4, " "), 32, 18);
+		text(('=' + objective).padEnd(4, ' '), 32, 18);
 	} else {
 		textRect(30, 0, 5, 17);
 		textRect(30, 17, 5, 6);
 		textRect(30, 23, 5, 5);
-		text("=", 32, 18);
-		text(objective.replace("/", "\n-\n").padEnd(4, " "), 31, 19);
+		text('=', 32, 18);
+		text(objective.replace('/', '\n-\n').padEnd(4, ' '), 31, 19);
 	}
 }
 
 function makeTheme() {
-	if (mode == "add") {
+	if (mode == 'add') {
 		let planet = new bgProps.Sprite(themes.blue.planet, 50, 20);
 		planet.vel.y = 0.01;
 		planet.scale = 2;
 	}
 
-	if (mode == "subtract") {
-		theme = "green";
+	if (mode == 'subtract') {
+		theme = 'green';
 
 		let planet = new bgProps.Sprite(themes.green.planet, 50, 20);
 		planet.vel.x = 0.02;
@@ -223,18 +213,14 @@ function makeTheme() {
 		shouldShootNumber = false;
 		displayEquation();
 	}
-	if (mode == "add & subtract") {
-		theme = "desert";
+	if (mode == 'add & subtract') {
+		theme = 'desert';
 
 		for (let i = 0; i < 40; i++) {
 			let prevY = 100;
 			if (bgProps[i - 1]) prevY = bgProps[i - 1].y;
 
-			let tpClouds = new bgProps.Sprite(
-				themes.desert.tpClouds,
-				170,
-				prevY - random(40, 70) * i
-			);
+			let tpClouds = new bgProps.Sprite(themes.desert.tpClouds, 170, prevY - random(40, 70) * i);
 			if (i % 3) tpClouds.y -= 300;
 			tpClouds.scale = 1.5;
 			tpClouds.vel.x = random(-0.005, 0.005);
@@ -243,11 +229,7 @@ function makeTheme() {
 			tpClouds.mirrorY = Math.random() > 0.5;
 			log(tpClouds.y);
 
-			let clouds = new bgProps.Sprite(
-				themes.desert.clouds,
-				170,
-				prevY - random(40, 70) * i
-			);
+			let clouds = new bgProps.Sprite(themes.desert.clouds, 170, prevY - random(40, 70) * i);
 			if (i % 3) clouds.y -= 300;
 			clouds.scale = 1.5;
 			clouds.vel.x = random(-0.005, 0.005);
@@ -257,8 +239,8 @@ function makeTheme() {
 			log(clouds.y);
 		}
 	}
-	if (mode == "all") {
-		theme = "orange";
+	if (mode == 'all') {
+		theme = 'orange';
 
 		let planet1 = new bgProps.Sprite(themes.orange.planet1, 100, 200);
 		planet1.vel.x = 0.02;
@@ -272,9 +254,9 @@ function makeTheme() {
 }
 
 async function startGame() {
-	text(" ".repeat(15), 31, 1);
-	text(" ".repeat(15), 32, 1);
-	text(" ".repeat(15), 33, 1);
+	text(' '.repeat(15), 31, 1);
+	text(' '.repeat(15), 32, 1);
+	text(' '.repeat(15), 33, 1);
 	equation = [];
 	shouldShootNumber = true;
 	setObjective();
@@ -292,43 +274,43 @@ async function startGame() {
 }
 
 function mainMenu() {
-	text("Number Dash", 5, 5);
-	text("Select Game Mode", 7, 5);
+	text('Number Dash', 5, 5);
+	text('Select Game Mode', 7, 5);
 
-	button("Addition", 9, 5, () => {
-		mode = "add";
-		mathSymbols = ["+"];
+	button('Addition', 9, 5, () => {
+		mode = 'add';
+		mathSymbols = ['+'];
 		symbOrNum = 0.7;
 		erase();
 		startGame();
 	});
 
-	button("Subtract", 11, 5, () => {
-		mode = "subtract";
-		mathSymbols = ["-"];
+	button('Subtract', 11, 5, () => {
+		mode = 'subtract';
+		mathSymbols = ['-'];
 		symbOrNum = 0.7;
 		erase();
 		startGame();
 	});
 
-	button("Add and Subtract", 13, 5, () => {
-		mode = "add & subtract";
-		mathSymbols = ["+", "-"];
+	button('Add and Subtract', 13, 5, () => {
+		mode = 'add & subtract';
+		mathSymbols = ['+', '-'];
 		symbOrNum = 0.5;
 		erase();
 		startGame();
 	});
-	button("Add, Subtract, Multiply, and Divide", 15, 5, () => {
-		mode = "all";
-		mathSymbols = ["+", "-", "x", "÷"];
+	button('Add, Subtract, Multiply, and Divide', 15, 5, () => {
+		mode = 'all';
+		mathSymbols = ['+', '-', 'x', '÷'];
 		symbOrNum = 0.5;
 		erase();
 		startGame();
 	});
-	button("fractions", 17, 5, () => {
-		mode = "add & subtract";
-		numMode = "fraction";
-		mathSymbols = ["+", "-"];
+	button('fractions', 17, 5, () => {
+		mode = 'add & subtract';
+		numMode = 'fraction';
+		mathSymbols = ['+', '-'];
 		symbOrNum = 0.5;
 		erase();
 		startGame();
@@ -345,7 +327,7 @@ function draw() {
 		player.ghostTime--;
 	}
 	image(themes[theme].bg, 0, 0, 320, 544);
-	if (mode == "add" || mode == "subtract" || mode == "all") {
+	if (mode == 'add' || mode == 'subtract' || mode == 'all') {
 		push();
 		tint(255, starsOpacity);
 		if (starsOpacity <= 140) {
@@ -375,10 +357,10 @@ function draw() {
 			explosion.moveTowards(player.x, player.y, 1);
 		}
 
-		if (keyIsDown("a")) {
+		if (keyIsDown('a')) {
 			player.rotation -= 5;
 		}
-		if (keyIsDown("d")) {
+		if (keyIsDown('d')) {
 			player.rotation += 5;
 		}
 		player.angularVelocity = 0;
@@ -418,7 +400,7 @@ function draw() {
 			} else {
 				textSize(12);
 				drawText(asteroid.data, asteroid.x - 6, asteroid.y - 4);
-				drawText("_", asteroid.x - 6, asteroid.y - 2);
+				drawText('_', asteroid.x - 6, asteroid.y - 2);
 			}
 		}
 		for (let asteroid of bgAsteroids) {
@@ -443,12 +425,12 @@ function restartGame() {
 }
 
 function keyPressed() {
-	if (key == " ") {
+	if (key == ' ') {
 		isPaused = !isPaused;
 		if (isPaused) {
 			tint(128, 32);
 
-			button("restart", 20, 4, restartGame);
+			button('restart', 20, 4, restartGame);
 		} else {
 			noTint();
 			eraseRect(0, 0, 26, 28);
@@ -470,7 +452,7 @@ function explosion(spark, asteroid) {
 	log(asteroid);
 	let data = asteroid.data;
 
-	if (data == "") {
+	if (data == '') {
 		placeAsteroid(asteroid);
 		return;
 	}
@@ -485,8 +467,8 @@ function explosion(spark, asteroid) {
 	}
 	play(hitSound);
 	shouldShootNumber = !shouldShootNumber;
-	if (numMode == "fraction" && !mathSymbols.includes(data)) {
-		data = data.replace("\n", "/");
+	if (numMode == 'fraction' && !mathSymbols.includes(data)) {
+		data = data.replace('\n', '/');
 	}
 	equation.push(data);
 
@@ -496,39 +478,39 @@ function explosion(spark, asteroid) {
 		nextNumber();
 	} else if (equation.length > 14) {
 		// if there is too many numers on eq box
-		gameOver("Your equation is too long.");
+		gameOver('Your equation is too long.');
 	}
 
 	placeAsteroid(asteroid);
 }
 
 function displayEquation() {
-	if (numMode != "fraction") {
-		text(" ".repeat(15), 32, 1); // erase
-		text(equation.join(""), 32, 1);
+	if (numMode != 'fraction') {
+		text(' '.repeat(15), 32, 1); // erase
+		text(equation.join(''), 32, 1);
 	} else {
-		text(" ".repeat(15), 31, 1); // erase
-		text(" ".repeat(15), 32, 1);
-		text(" ".repeat(15), 33, 1);
+		text(' '.repeat(15), 31, 1); // erase
+		text(' '.repeat(15), 32, 1);
+		text(' '.repeat(15), 33, 1);
 
 		// equation -> ['3/4', '+', '1/2']
 		// 3 1
 		// -+-
 		// 4 2
 
-		let top = "";
-		let mid = "";
-		let low = "";
+		let top = '';
+		let mid = '';
+		let low = '';
 
 		for (let item of equation) {
 			if (item.length > 1) {
 				top += item[0];
-				mid += "-";
+				mid += '-';
 				low += item[2];
 			} else {
-				top += " ";
+				top += ' ';
 				mid += item;
-				low += " ";
+				low += ' ';
 			}
 		}
 		text(top, 31, 1);
@@ -545,10 +527,11 @@ function mousePressed() {
 		spark.y = player.y;
 
 		spark.rotation = player.rotation + 180;
+		spark.direction = spark.rotation;
 		spark.speed = 5;
 
 		// ternary condition, used to write if + else  on one line
-		spark.ani("spark" + (shouldShootNumber ? 0 : 1));
+		spark.ani('spark' + (shouldShootNumber ? 0 : 1));
 		if (spark) sparkCount++;
 		if (sparkCount == 10) {
 			sparkCount = 0;
@@ -594,7 +577,7 @@ function gotObjective() {
 		// so that we can edit it without changing the equation array
 		let jsEq = [...equation];
 
-		if (numMode == "fraction") {
+		if (numMode == 'fraction') {
 			let denoms = [];
 			for (let i = 0; i < equation.length; i += 2) {
 				denoms.push(Number(equation[i][2]));
@@ -617,30 +600,30 @@ function gotObjective() {
 		// 4 = eval(3+1)
 
 		for (let i = 1; i < jsEq.length; i += 2) {
-			if (jsEq[i] == "÷") {
+			if (jsEq[i] == '÷') {
 				let result = Math.round(jsEq[i - 1] / jsEq[i + 1]);
 				jsEq.splice(i - 1, 3, result);
 				i -= 2;
-			} else if (jsEq[i] == "x") {
-				jsEq[i] = "*";
+			} else if (jsEq[i] == 'x') {
+				jsEq[i] = '*';
 			}
 		}
 
 		let goal = objective;
-		if (numMode == "fraction") {
+		if (numMode == 'fraction') {
 			let multiple = lcm / goal[2];
 			goal = goal[0] * multiple;
 		}
 
-		let result = eval(jsEq.join(""));
+		let result = eval(jsEq.join(''));
 		if (result == goal) {
 			return true;
 		}
-		if (mode == "add" && result > goal) {
-			gameOver("The result of your equation is higher than the objective.");
+		if (mode == 'add' && result > goal) {
+			gameOver('The result of your equation is higher than the objective.');
 		}
-		if (mode == "subtract" && result < goal) {
-			gameOver("The result of your equation is lower than the objective.");
+		if (mode == 'subtract' && result < goal) {
+			gameOver('The result of your equation is lower than the objective.');
 		}
 	}
 }
