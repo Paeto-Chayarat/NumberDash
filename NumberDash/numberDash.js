@@ -1,5 +1,5 @@
 // set the initial animation and position for the player ship
-player.ani('idle');
+player.ani = 'idle';
 player.overlap(sparks);
 player.overlap(explosions);
 explosions.overlap(asteroids);
@@ -531,7 +531,7 @@ function mousePressed() {
 		spark.speed = 5;
 
 		// ternary condition, used to write if + else  on one line
-		spark.ani('spark' + (shouldShootNumber ? 0 : 1));
+		spark.ani = 'spark' + (shouldShootNumber ? 0 : 1);
 		if (spark) sparkCount++;
 		if (sparkCount == 10) {
 			sparkCount = 0;
