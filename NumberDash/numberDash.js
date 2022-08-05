@@ -1,25 +1,105 @@
-// set the initial animation and position for the player ship
-player.ani = 'idle';
-player.overlap(sparks);
-player.overlap(explosions);
-explosions.overlap(asteroids);
-asteroids.overlap(asteroids);
+function preload() {
+	let soundDir = QuintOS.dir + '/sounds';
 
-player.ghostTime = 0;
+	crashSound = loadSound(soundDir + '/crash.wav');
+	shootSound = loadSound(soundDir + '/shoot.wav');
+	hitSound = loadSound(soundDir + '/gotNumber.wav');
+	wrongHitSound = loadSound(soundDir + '/wrongHit.wav');
+	gameOverSound = loadSound(soundDir + '/gameOver.wav');
+	// world = new World(0, 0);
+	// world.offsetX = 10;
+	// world.offsetY = 40;
 
-player.overlap(asteroids, (player, asteroid) => {
-	if (player.ghostTime == 0) {
-		placeAsteroid(asteroid);
-		play(crashSound);
-		let explosion = new explosions.Sprite('default', player.x, player.y);
-		explosion.life = 20;
-		health -= 42;
-		player.ghostTime = 180;
-		if (health < 0) {
-			gameOver('You got hit too many times, your ship was destroyed.');
-		}
+	theme = 'blue';
+	themes = {};
+
+	themes.blue = {
+		bg: loadImage(QuintOS.dir + '/img/blue-background/blue-back.png'),
+		stars: loadImage(QuintOS.dir + '/img/blue-background/blue-stars.png'),
+		planet: loadImage(QuintOS.dir + '/img/blue-background/prop-planet-big.png')
+	};
+
+	themes.green = {
+		bg: loadImage(QuintOS.dir + '/img/green-background/green-back.png'),
+		stars: loadImage(QuintOS.dir + '/img/green-background/green-stars.png'),
+		planet: loadImage(QuintOS.dir + '/img/green-background/green-planet.png'),
+		ring: loadImage(QuintOS.dir + '/img/green-background/ring-planet.png'),
+		planet1: loadImage(QuintOS.dir + '/img/green-background/blue-planet.png')
+	};
+
+	themes.desert = {
+		bg: loadImage(QuintOS.dir + '/img/desert-background/desert-background.png'),
+		clouds: loadImage(QuintOS.dir + '/img/desert-background/clouds.png'),
+		tpClouds: loadImage(QuintOS.dir + '/img/desert-background/clouds-transparent.png')
+	};
+
+	themes.orange = {
+		bg: loadImage(QuintOS.dir + '/img/orange-background/orange-back.png'),
+		stars: loadImage(QuintOS.dir + '/img/orange-background/orange-stars.png'),
+		planet1: loadImage(QuintOS.dir + '/img/orange-background/planet-1.png'),
+		planet2: loadImage(QuintOS.dir + '/img/orange-background/planet-2.png')
+	};
+
+	bgProps = new Group();
+	bgProps.layer = 0;
+	bgProps.collider = 'none';
+
+	player = new Sprite(150, 300, 32);
+	player.layer = 1;
+	player.spriteSheet = loadImage(QuintOS.dir + '/img/player.png');
+	player.addAni('idle', { size: [29, 29], frames: 4, delay: 6 });
+	player.rotation = 90;
+	player.rotationLocked = true;
+	// player.setCollider("circle");
+
+	/* Spark shots */
+
+	sparks = new Group();
+	sparks.spriteSheet = loadImage(QuintOS.dir + '/img/spark.png');
+	sparks.addAni('spark0', { line: 0, frames: 5, size: [64, 32] });
+	sparks.spriteSheet = loadImage(QuintOS.dir + '/img/spark2.png');
+	sparks.addAni('spark1', { line: 0, frames: 5, size: [64, 32] });
+	sparks.rotation = -90;
+	sparks.rotationLocked = true;
+
+	for (let i = 0; i < 10; i++) {
+		new sparks.Sprite('spark0', 1000, 1000, 2, 2);
 	}
-});
+
+	/* Asteroids */
+
+	allAsteroids = new Group();
+	for (let i = 0; i < 5; i++) {
+		let img = loadImage(QuintOS.dir + '/img/asteroids/asteroid-' + i + '.png');
+		allAsteroids.addAni('atd' + i, img);
+	}
+
+	asteroids = new allAsteroids.Group();
+	asteroids.layer = 1;
+	for (let i = 0; i < 60; i++) {
+		new asteroids.Sprite('atd' + (i % 5), i * 40, -20, 20);
+	}
+
+	bgAsteroids = new allAsteroids.Group();
+	bgAsteroids.layer = 0;
+	bgAsteroids.collider = 'none';
+	bgAsteroids.scale = 0.5;
+	for (let i = 0; i < 50; i++) {
+		new bgAsteroids.Sprite('atd' + (i % 5), i * 40, -20, 20);
+	}
+
+	frAsteroids = new allAsteroids.Group();
+	frAsteroids.layer = 2;
+	frAsteroids.collider = 'none';
+	frAsteroids.scale = 2;
+	for (let i = 0; i < 5; i++) {
+		new frAsteroids.Sprite('atd' + (i % 5), i * 40, -20, 20);
+	}
+
+	explosions = new Group();
+	explosions.spriteSheet = loadImage(QuintOS.dir + '/img/explosion.png');
+	explosions.addAni({ line: 0, frames: 5, size: [32, 32] });
+}
 
 // init variables
 let sparkCount = 0;
@@ -35,6 +115,36 @@ let mode;
 let symbOrNum;
 let moreBg = true;
 let numMode = 'num';
+let starsOpacity = 255;
+let starsShine = false;
+
+function setup() {
+	// set the initial animation and position for the player ship
+	player.ani = 'idle';
+	player.overlap(sparks);
+	player.overlap(explosions);
+	explosions.overlap(asteroids);
+	asteroids.overlap(asteroids);
+
+	player.ghostTime = 0;
+
+	player.overlap(asteroids, (player, asteroid) => {
+		if (player.ghostTime == 0) {
+			placeAsteroid(asteroid);
+			play(crashSound);
+			let explosion = new explosions.Sprite('default', player.x, player.y);
+			explosion.life = 20;
+			health -= 42;
+			player.ghostTime = 180;
+			if (health < 0) {
+				gameOver('You got hit too many times, your ship was destroyed.');
+			}
+		}
+	});
+
+	sparks.collide(asteroids, explosion);
+	mainMenu();
+}
 
 // position asteroids
 function placeAsteroids() {
@@ -317,11 +427,6 @@ function mainMenu() {
 	});
 }
 
-mainMenu();
-
-let starsOpacity = 255;
-let starsShine = false;
-
 function draw() {
 	if (player.ghostTime > 0) {
 		player.ghostTime--;
@@ -437,8 +542,6 @@ function keyPressed() {
 		}
 	}
 }
-
-sparks.collide(asteroids, explosion);
 
 function explosion(spark, asteroid) {
 	spark.x = 1000;
