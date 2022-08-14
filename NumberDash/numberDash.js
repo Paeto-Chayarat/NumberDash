@@ -119,8 +119,22 @@ let moreBg = true;
 let numMode = "num";
 let starsOpacity = 255;
 let starsShine = false;
+let progress = 0;
+
+let levels = {
+	tutorial: 0,
+	add: 1,
+	subtract: 2,
+	"add & subtract": 3,
+	fraction: 4,
+};
 
 function setup() {
+	progress = getItem("progress");
+	if (progress === null) {
+		progress = 0;
+	}
+
 	// set the initial animation and position for the player ship
 	player.ani = "idle";
 	player.overlap(sparks);
@@ -143,6 +157,7 @@ function setup() {
 				await alert(
 					"Your health will decrease if you hit an asteriod, check your health bar at the bottom (red line)"
 				);
+				await delay(1000);
 				isPaused = false;
 			}
 			if (health < 0) {
@@ -194,7 +209,10 @@ async function gameOver(msg) {
 async function gameWon(msg) {
 	isInGame = false;
 	time = 1;
+	progress = levels[mode] + 1;
+	storeItem("progress", progress);
 	await alert(msg + "You Won! Try doing the next lvl!");
+	mainMenu();
 }
 
 function nextNumber() {
@@ -202,11 +220,6 @@ function nextNumber() {
 	equation = [objective];
 
 	displayEquation();
-
-	if (mode == "add" && objective == 100) {
-		gameWon();
-		return;
-	}
 
 	for (let asteroid of asteroids) {
 		if (asteroid.y < -10) {
@@ -280,6 +293,8 @@ function setObjective() {
 	while (objective == prevObjective) {
 		if (mode == "add & subtract" && numMode == "num") {
 			objective += Math.floor(Math.random() * 40 - 20);
+		} else if (mode == "tutorial") {
+			objective = 10;
 		} else if (mode == "add & subtract" && numMode == "fraction") {
 			objective =
 				Math.floor(Math.random() * 7) + "/" + Math.ceil(Math.random() * 5);
@@ -316,10 +331,6 @@ function makeTheme() {
 		let planet = new bgProps.Sprite(themes.blue.planet, 50, 20);
 		planet.vel.y = 0.01;
 		planet.scale = 2;
-	}
-
-	if (mode == "tutorial") {
-		objective = 10;
 	}
 	if (mode == "subtract") {
 		theme = "green";
@@ -397,6 +408,9 @@ async function startGame() {
 	equation = [];
 	shouldShootNumber = true;
 	if (mode != "tutorial") setObjective();
+	else {
+		objective = Math.floor(Math.random() * 8 + 1);
+	}
 	displayObjective();
 	placeAsteroids();
 	if (moreBg) {
@@ -412,10 +426,9 @@ async function startGame() {
 }
 
 function mainMenu() {
-	text("Number Dash", 5, 5);
-	text("Select Game Mode", 7, 5);
+	text("Select Game Mode!", 5, 5);
 
-	button("Tutorial", 23, 5, async () => {
+	button("Level 0: Tutorial", 9, 5, async () => {
 		mode = "tutorial";
 		mathSymbols = ["+"];
 		symbOrNum = 0.7;
@@ -425,48 +438,56 @@ function mainMenu() {
 			"Move your mouse cursor to move the ship.\n\nClick your mouse to shoot.\n\nTry shooting an asteroid with a number on it!",
 			4
 		);
+		await delay(1000);
 		isPaused = false;
 		startGame();
 	});
-
-	button("Addition", 9, 5, () => {
-		mode = "add";
-		mathSymbols = ["+"];
-		symbOrNum = 0.7;
-		erase();
-		startGame();
-	});
-
-	button("Subtract", 11, 5, () => {
-		mode = "subtract";
-		mathSymbols = ["-"];
-		symbOrNum = 0.7;
-		erase();
-		startGame();
-	});
-
-	button("Add and Subtract", 13, 5, () => {
-		mode = "add & subtract";
-		mathSymbols = ["+", "-"];
-		symbOrNum = 0.5;
-		erase();
-		startGame();
-	});
-	button("Add, Subtract, Multiply, and Divide", 15, 5, () => {
-		mode = "all";
-		mathSymbols = ["+", "-", "x", "÷"];
-		symbOrNum = 0.5;
-		erase();
-		startGame();
-	});
-	button("fractions", 18, 5, () => {
-		mode = "add & subtract";
-		numMode = "fraction";
-		mathSymbols = ["+", "-"];
-		symbOrNum = 0.5;
-		erase();
-		startGame();
-	});
+	if (progress >= 1) {
+		button("Level 1: Addition", 11, 5, () => {
+			mode = "add";
+			mathSymbols = ["+"];
+			symbOrNum = 0.7;
+			erase();
+			startGame();
+		});
+	}
+	if (progress >= 2) {
+		button("Level 2: Subtract", 13, 5, () => {
+			mode = "subtract";
+			mathSymbols = ["-"];
+			symbOrNum = 0.7;
+			erase();
+			startGame();
+		});
+	}
+	if (progress >= 3) {
+		button("Level 3: Add and Subtract", 15, 5, () => {
+			mode = "add & subtract";
+			mathSymbols = ["+", "-"];
+			symbOrNum = 0.5;
+			erase();
+			startGame();
+		});
+	}
+	if (progress >= 4) {
+		button("Level 4: Add, Subtract, Multiply, and Divide", 18, 5, () => {
+			mode = "all";
+			mathSymbols = ["+", "-", "x", "÷"];
+			symbOrNum = 0.5;
+			erase();
+			startGame();
+		});
+	}
+	if (progress >= 5) {
+		button("Level 5: fractions", 21, 5, () => {
+			mode = "add & subtract";
+			numMode = "fraction";
+			mathSymbols = ["+", "-"];
+			symbOrNum = 0.5;
+			erase();
+			startGame();
+		});
+	}
 }
 
 function draw() {
@@ -619,6 +640,7 @@ async function explosion(spark, asteroid) {
 			await alert(
 				"You can't shoot numbers with red lasers, only math symbols!"
 			);
+			await delay(1000);
 			isPaused = false;
 		}
 		return;
@@ -630,6 +652,7 @@ async function explosion(spark, asteroid) {
 			await alert(
 				"You can't shoot math symbols with blue lasers, only numbers!"
 			);
+			await delay(1000);
 			isPaused = false;
 		}
 		return;
@@ -644,6 +667,13 @@ async function explosion(spark, asteroid) {
 	displayEquation();
 
 	if (gotObjective()) {
+		if (
+			(mode == "tutorial" && objective >= 10) ||
+			(mode == "add" && objective == 100)
+		) {
+			gameWon();
+			return;
+		}
 		nextNumber();
 	} else if (equation.length > 14) {
 		// if there is too many numers on eq box
@@ -664,6 +694,7 @@ async function explosion(spark, asteroid) {
 				"Great shot!\n\nNow you can only shoot numbers.\n\nThe goal of the game is to create an equation that results in the objective number in the box below."
 			);
 		}
+		await delay(1000);
 		isPaused = false;
 	}
 }
