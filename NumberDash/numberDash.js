@@ -120,6 +120,7 @@ let numMode = "num";
 let starsOpacity = 255;
 let starsShine = false;
 let progress = 0;
+let goal;
 
 let levels = {
 	tutorial: 0,
@@ -210,6 +211,9 @@ async function gameWon(msg) {
 	isInGame = false;
 	time = 1;
 	progress = levels[mode] + 1;
+	if (mode == "subtract") {
+		progress = 5;
+	}
 	storeItem("progress", progress);
 	await alert(msg + "You Won! Try doing the next lvl!");
 	mainMenu();
@@ -308,6 +312,9 @@ function setObjective() {
 		if (objective > 100 && mode == "add") {
 			objective = 100;
 		}
+		if (objective < 0 && mode == "subtract") {
+			objective = 0;
+		}
 	}
 }
 
@@ -347,11 +354,6 @@ function makeTheme() {
 		let ring = new bgProps.Sprite(themes.green.ring, 200, 150);
 		ring.scale = 2;
 		ring.vel.y = 0.005;
-
-		equation = [100];
-		objective = 100;
-		shouldShootNumber = false;
-		displayEquation();
 	}
 	if (mode == "add & subtract") {
 		theme = "desert";
@@ -407,10 +409,18 @@ async function startGame() {
 	text(" ".repeat(15), 33, 1);
 	equation = [];
 	shouldShootNumber = true;
+	if (mode == "subtract") {
+		equation = [100];
+		objective = 100;
+		goal = objective;
+		shouldShootNumber = false;
+		displayEquation();
+	}
 	if (mode != "tutorial") setObjective();
 	else {
 		objective = Math.floor(Math.random() * 8 + 1);
 	}
+
 	displayObjective();
 	placeAsteroids();
 	if (moreBg) {
@@ -479,7 +489,7 @@ function mainMenu() {
 		});
 	}
 	if (progress >= 5) {
-		button("Level 5: fractions", 21, 5, () => {
+		button("Level 5: fractions", 22, 5, () => {
 			mode = "add & subtract";
 			numMode = "fraction";
 			mathSymbols = ["+", "-"];
@@ -666,10 +676,13 @@ async function explosion(spark, asteroid) {
 
 	displayEquation();
 
-	if (gotObjective()) {
+	let result = evaluateEquation();
+
+	if (result == goal) {
 		if (
 			(mode == "tutorial" && objective >= 10) ||
-			(mode == "add" && objective == 100)
+			(mode == "add" && objective == 100) ||
+			(mode == "subtract" && objective == 0)
 		) {
 			gameWon();
 			return;
@@ -678,6 +691,15 @@ async function explosion(spark, asteroid) {
 	} else if (equation.length > 14) {
 		// if there is too many numers on eq box
 		gameOver("Your equation is too long.");
+	}
+
+	if ((mode == "add" || mode == "tutorial") && result > goal) {
+		gameOver("The result of your equation is higher than the objective.");
+		return;
+	}
+	if (mode == "subtract" && result < goal) {
+		gameOver("The result of your equation is lower than the objective.");
+		return;
 	}
 
 	placeAsteroid(asteroid);
@@ -784,7 +806,7 @@ function findLCM(n1, n2) {
 	return i;
 }
 
-function gotObjective() {
+function evaluateEquation() {
 	// check if equation does not end with math symbol
 	if (!mathSymbols.includes(equation[equation.length - 1])) {
 		let lcm = 1;
@@ -824,21 +846,13 @@ function gotObjective() {
 			}
 		}
 
-		let goal = objective;
+		goal = objective;
 		if (numMode == "fraction") {
 			let multiple = lcm / goal[2];
 			goal = goal[0] * multiple;
 		}
 
 		let result = eval(jsEq.join(""));
-		if (result == goal) {
-			return true;
-		}
-		if (mode == "add" && result > goal) {
-			gameOver("The result of your equation is higher than the objective.");
-		}
-		if (mode == "subtract" && result < goal) {
-			gameOver("The result of your equation is lower than the objective.");
-		}
+		return result;
 	}
 }
