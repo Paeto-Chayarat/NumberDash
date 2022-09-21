@@ -124,6 +124,7 @@ let levels = {
 };
 
 function setup() {
+	noStroke();
 	progress = getItem('progress');
 	if (progress === null) {
 		progress = 0;
