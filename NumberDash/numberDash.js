@@ -1,48 +1,48 @@
 function preload() {
-	crashSound = loadSound('sounds/crash.wav');
-	shootSound = loadSound('sounds/shoot.wav');
-	hitSound = loadSound('sounds/gotNumber.wav');
-	wrongHitSound = loadSound('sounds/wrongHit.wav');
-	gameOverSound = loadSound('sounds/gameOver.wav');
+	crashSound = loadSound("sounds/crash.wav");
+	shootSound = loadSound("sounds/shoot.wav");
+	hitSound = loadSound("sounds/gotNumber.wav");
+	wrongHitSound = loadSound("sounds/wrongHit.wav");
+	gameOverSound = loadSound("sounds/gameOver.wav");
 
-	theme = 'blue';
+	theme = "blue";
 	themes = {};
 
 	themes.blue = {
-		bg: loadImage('img/blue-background/blue-back.png'),
-		stars: loadImage('img/blue-background/blue-stars.png'),
-		planet: loadImage('img/blue-background/prop-planet-big.png')
+		bg: loadImage("img/blue-background/blue-back.png"),
+		stars: loadImage("img/blue-background/blue-stars.png"),
+		planet: loadImage("img/blue-background/prop-planet-big.png"),
 	};
 
 	themes.green = {
-		bg: loadImage('img/green-background/green-back.png'),
-		stars: loadImage('img/green-background/green-stars.png'),
-		planet: loadImage('img/green-background/green-planet.png'),
-		ring: loadImage('img/green-background/ring-planet.png'),
-		planet1: loadImage('img/green-background/blue-planet.png')
+		bg: loadImage("img/green-background/green-back.png"),
+		stars: loadImage("img/green-background/green-stars.png"),
+		planet: loadImage("img/green-background/green-planet.png"),
+		ring: loadImage("img/green-background/ring-planet.png"),
+		planet1: loadImage("img/green-background/blue-planet.png"),
 	};
 
 	themes.desert = {
-		bg: loadImage('img/desert-background/desert-background.png'),
-		clouds: loadImage('img/desert-background/clouds.png'),
-		tpClouds: loadImage('img/desert-background/clouds-transparent.png')
+		bg: loadImage("img/desert-background/desert-background.png"),
+		clouds: loadImage("img/desert-background/clouds.png"),
+		tpClouds: loadImage("img/desert-background/clouds-transparent.png"),
 	};
 
 	themes.orange = {
-		bg: loadImage('img/orange-background/orange-back.png'),
-		stars: loadImage('img/orange-background/orange-stars.png'),
-		planet1: loadImage('img/orange-background/planet-1.png'),
-		planet2: loadImage('img/orange-background/planet-2.png')
+		bg: loadImage("img/orange-background/orange-back.png"),
+		stars: loadImage("img/orange-background/orange-stars.png"),
+		planet1: loadImage("img/orange-background/planet-1.png"),
+		planet2: loadImage("img/orange-background/planet-2.png"),
 	};
 
 	bgProps = new Group();
 	bgProps.layer = 0;
-	bgProps.collider = 'none';
+	bgProps.collider = "none";
 
 	player = new Sprite(150, 300, 32);
 	player.layer = 1;
-	player.spriteSheet = loadImage('img/player.png');
-	player.addAni('idle', { size: [29, 29], frames: 4, delay: 6 });
+	player.spriteSheet = loadImage("img/player.png");
+	player.addAni("idle", { size: [29, 29], frames: 4, delay: 6 });
 	player.rotation = 90;
 	player.rotationLock = true;
 	// player.setCollider("circle");
@@ -50,10 +50,10 @@ function preload() {
 	/* Spark shots */
 
 	sparks = new Group();
-	sparks.spriteSheet = loadImage('img/spark.png');
-	sparks.addAni('spark0', { line: 0, frames: 5, size: [64, 32] });
-	sparks.spriteSheet = loadImage('img/spark2.png');
-	sparks.addAni('spark1', { line: 0, frames: 5, size: [64, 32] });
+	sparks.spriteSheet = loadImage("img/spark.png");
+	sparks.addAni("spark0", { line: 0, frames: 5, size: [64, 32] });
+	sparks.spriteSheet = loadImage("img/spark2.png");
+	sparks.addAni("spark1", { line: 0, frames: 5, size: [64, 32] });
 	sparks.rotation = -90;
 	sparks.rotationLock = true;
 
@@ -61,38 +61,38 @@ function preload() {
 
 	allAsteroids = new Group();
 	for (let i = 0; i < 5; i++) {
-		let img = loadImage('img/asteroids/asteroid-' + i + '.png');
-		allAsteroids.addAni('atd' + i, img);
+		let img = loadImage("img/asteroids/asteroid-" + i + ".png");
+		allAsteroids.addAni("atd" + i, img);
 	}
 
 	asteroids = new allAsteroids.Group();
 	asteroids.layer = 1;
 	for (let i = 0; i < 60; i++) {
-		new asteroids.Sprite('atd' + (i % 5), i * 40, -20, 20);
+		new asteroids.Sprite("atd" + (i % 5), i * 40, -20, 20);
 	}
 
 	bgAsteroids = new allAsteroids.Group();
 	bgAsteroids.layer = 0;
-	bgAsteroids.collider = 'none';
+	bgAsteroids.collider = "none";
 	bgAsteroids.scale = 0.5;
 	for (let i = 0; i < 5; i++) {
-		let img = loadImage('img/dark_asteroids/asteroid-' + i + '.png');
-		bgAsteroids.addAni('atd' + i, img);
+		let img = loadImage("img/dark_asteroids/asteroid-" + i + ".png");
+		bgAsteroids.addAni("atd" + i, img);
 	}
 	for (let i = 0; i < 200; i++) {
-		new bgAsteroids.Sprite('atd' + (i % 5), i * 40, -20, 20);
+		new bgAsteroids.Sprite("atd" + (i % 5), i * 40, -20, 20);
 	}
 
 	frAsteroids = new allAsteroids.Group();
 	frAsteroids.layer = 2;
-	frAsteroids.collider = 'none';
+	frAsteroids.collider = "none";
 	frAsteroids.scale = 2;
 	for (let i = 0; i < 5; i++) {
-		new frAsteroids.Sprite('atd' + (i % 5), i * 40, -20, 20);
+		new frAsteroids.Sprite("atd" + (i % 5), i * 40, -20, 20);
 	}
 
 	explosions = new Group();
-	explosions.spriteSheet = loadImage('img/explosion.png');
+	explosions.spriteSheet = loadImage("img/explosion.png");
 	explosions.addAni({ line: 0, frames: 5, size: [32, 32] });
 }
 
@@ -109,7 +109,7 @@ let isPaused = false;
 let mode;
 let symbOrNum;
 let moreBg = true;
-let numMode = 'num';
+let numMode = "num";
 let starsOpacity = 255;
 let starsShine = false;
 let progress = 0;
@@ -119,19 +119,19 @@ let levels = {
 	tutorial: 0,
 	add: 1,
 	subtract: 2,
-	'add & subtract': 3,
-	fraction: 4
+	"add & subtract": 3,
+	fraction: 4,
 };
 
 function setup() {
 	noStroke();
-	progress = getItem('progress');
+	progress = getItem("progress");
 	if (progress === null) {
 		progress = 0;
 	}
 
 	// set the initial animation and position for the player ship
-	player.ani = 'idle';
+	player.ani = "idle";
 	player.overlap(sparks);
 	player.overlap(explosions);
 	explosions.overlap(asteroids);
@@ -143,24 +143,26 @@ function setup() {
 		if (player.ghostTime == 0) {
 			placeAsteroid(asteroid);
 			play(crashSound);
-			let explosion = new explosions.Sprite('default', player.x, player.y);
+			let explosion = new explosions.Sprite("default", player.x, player.y);
 			explosion.life = 20;
 			health -= 42;
 			player.ghostTime = 180;
-			if (mode == 'tutorial') {
+			if (mode == "tutorial") {
 				isPaused = true;
-				await alert('Your health will decrease if you hit an asteriod, check your health bar at the bottom (red line)');
+				await alert(
+					"Your health will decrease if you hit an asteriod, check your health bar at the bottom (red line)"
+				);
 				await delay(1000);
 				isPaused = false;
 			}
 			if (health < 0) {
-				gameOver('You got hit too many times, your ship was destroyed.');
+				gameOver("You got hit too many times, your ship was destroyed.");
 			}
 		}
 	});
 
 	for (let i = 0; i < 10; i++) {
-		new sparks.Sprite('spark0', 1000, 1000, 2, 2);
+		new sparks.Sprite("spark0", 1000, 1000, 2, 2);
 	}
 
 	sparks.collide(asteroids, explosion);
@@ -184,12 +186,12 @@ function placeAsteroids() {
 }
 
 async function timer() {
-	text(time.toString().padStart(3, ' '), 32, 24);
+	text(time.toString().padStart(3, " "), 32, 24);
 	await delay(1000);
 	time--;
 	if (!isInGame) return;
 	if (time == 0) {
-		gameOver('You ran out of time!');
+		gameOver("You ran out of time!");
 		return;
 	}
 	timer();
@@ -199,7 +201,7 @@ async function gameOver(msg) {
 	play(gameOverSound);
 	isInGame = false;
 	time = 1;
-	await alert(msg + ' Game Over. Try Again?');
+	await alert(msg + " Game Over. Try Again?");
 	startGame();
 }
 
@@ -207,11 +209,11 @@ async function gameWon(msg) {
 	isInGame = false;
 	time = 1;
 	progress = levels[mode] + 1;
-	if (mode == 'subtract') {
+	if (mode == "subtract") {
 		progress = 5;
 	}
-	storeItem('progress', progress);
-	await alert(msg + 'You Won! Try doing the next lvl!');
+	storeItem("progress", progress);
+	await alert(msg + "You Won! Try doing the next lvl!");
 	mainMenu();
 }
 
@@ -234,25 +236,28 @@ function nextNumber() {
 }
 
 function changeAsteroidData(asteroid) {
-	if (mode == 'add & subtract' && numMode == 'fraction') {
+	if (mode == "add & subtract" && numMode == "fraction") {
 		if (Math.random() < symbOrNum) {
 			let chance = Math.random();
 			if (chance < 0.5) {
 				//make denominater near goal
-				asteroid.data = Math.floor(Math.random() * 7) + '\n' + Math.ceil(Math.random() * 5);
+				asteroid.data =
+					Math.floor(Math.random() * 7) + "\n" + Math.ceil(Math.random() * 5);
 			} else if (equation.length && chance < 0.75) {
-				asteroid.data = Math.floor(Math.random() * 7) + '\n' + equation[0][2];
+				asteroid.data = Math.floor(Math.random() * 7) + "\n" + equation[0][2];
 			} else {
-				asteroid.data = Math.floor(Math.random() * 7) + '\n' + objective[2];
+				asteroid.data = Math.floor(Math.random() * 7) + "\n" + objective[2];
 			}
 		} else {
-			asteroid.data = mathSymbols[Math.floor(Math.random() * mathSymbols.length)];
+			asteroid.data =
+				mathSymbols[Math.floor(Math.random() * mathSymbols.length)];
 		}
 	} else {
 		if (Math.random() < symbOrNum) {
 			asteroid.data = Math.floor(Math.random() * 10);
 		} else {
-			asteroid.data = mathSymbols[Math.floor(Math.random() * mathSymbols.length)];
+			asteroid.data =
+				mathSymbols[Math.floor(Math.random() * mathSymbols.length)];
 		}
 	}
 }
@@ -288,51 +293,52 @@ function placeAsteroid(asteroid) {
 function setObjective() {
 	let prevObjective = objective;
 	while (objective == prevObjective) {
-		if (mode == 'add & subtract' && numMode == 'num') {
+		if (mode == "add & subtract" && numMode == "num") {
 			objective += Math.floor(Math.random() * 40 - 20);
-		} else if (mode == 'tutorial') {
+		} else if (mode == "tutorial") {
 			objective = 10;
-		} else if (mode == 'add & subtract' && numMode == 'fraction') {
-			objective = Math.floor(Math.random() * 7) + '/' + Math.ceil(Math.random() * 5);
-		} else if (mode == 'add') {
+		} else if (mode == "add & subtract" && numMode == "fraction") {
+			objective =
+				Math.floor(Math.random() * 7) + "/" + Math.ceil(Math.random() * 5);
+		} else if (mode == "add") {
 			objective += Math.floor(Math.random() * 20);
-		} else if (mode == 'subtract') {
+		} else if (mode == "subtract") {
 			objective -= Math.floor(Math.random() * 20);
 		} else {
 			objective = Math.floor(Math.random() * 100);
 		}
-		if (objective > 100 && mode == 'add') {
+		if (objective > 100 && mode == "add") {
 			objective = 100;
 		}
-		if (objective < 0 && mode == 'subtract') {
+		if (objective < 0 && mode == "subtract") {
 			objective = 0;
 		}
 	}
 }
 
 function displayObjective() {
-	if (numMode != 'fraction') {
+	if (numMode != "fraction") {
 		textRect(31, 0, 3, 17);
 		textRect(31, 17, 3, 6);
 		textRect(31, 23, 3, 5);
-		text(('=' + objective).padEnd(4, ' '), 32, 18);
+		text(("=" + objective).padEnd(4, " "), 32, 18);
 	} else {
 		textRect(30, 0, 5, 17);
 		textRect(30, 17, 5, 6);
 		textRect(30, 23, 5, 5);
-		text('=', 32, 18);
-		text(objective.replace('/', '\n-\n').padEnd(4, ' '), 31, 19);
+		text("=", 32, 18);
+		text(objective.replace("/", "\n-\n").padEnd(4, " "), 31, 19);
 	}
 }
 
 function makeTheme() {
-	if (mode == 'add') {
+	if (mode == "add") {
 		let planet = new bgProps.Sprite(themes.blue.planet, 50, 20);
 		planet.vel.y = 0.01;
 		planet.scale = 2;
 	}
-	if (mode == 'subtract') {
-		theme = 'green';
+	if (mode == "subtract") {
+		theme = "green";
 
 		let planet = new bgProps.Sprite(themes.green.planet, 50, 20);
 		planet.vel.x = 0.02;
@@ -347,14 +353,18 @@ function makeTheme() {
 		ring.scale = 2;
 		ring.vel.y = 0.005;
 	}
-	if (mode == 'add & subtract') {
-		theme = 'desert';
+	if (mode == "add & subtract") {
+		theme = "desert";
 
 		for (let i = 0; i < 40; i++) {
 			let prevY = 100;
 			if (bgProps[i - 1]) prevY = bgProps[i - 1].y;
 
-			let tpClouds = new bgProps.Sprite(themes.desert.tpClouds, 170, prevY - random(40, 70) * i);
+			let tpClouds = new bgProps.Sprite(
+				themes.desert.tpClouds,
+				170,
+				prevY - random(40, 70) * i
+			);
 			if (i % 3) tpClouds.y -= 300;
 			tpClouds.scale = 1.5;
 			tpClouds.vel.x = random(-0.005, 0.005);
@@ -363,7 +373,11 @@ function makeTheme() {
 			tpClouds.mirrorY = Math.random() > 0.5;
 			log(tpClouds.y);
 
-			let clouds = new bgProps.Sprite(themes.desert.clouds, 170, prevY - random(40, 70) * i);
+			let clouds = new bgProps.Sprite(
+				themes.desert.clouds,
+				170,
+				prevY - random(40, 70) * i
+			);
 			if (i % 3) clouds.y -= 300;
 			clouds.scale = 1.5;
 			clouds.vel.x = random(-0.005, 0.005);
@@ -373,8 +387,8 @@ function makeTheme() {
 			log(clouds.y);
 		}
 	}
-	if (mode == 'all') {
-		theme = 'orange';
+	if (mode == "all") {
+		theme = "orange";
 
 		let planet1 = new bgProps.Sprite(themes.orange.planet1, 100, 200);
 		planet1.vel.x = 0.02;
@@ -388,19 +402,19 @@ function makeTheme() {
 }
 
 async function startGame() {
-	text(' '.repeat(15), 31, 1);
-	text(' '.repeat(15), 32, 1);
-	text(' '.repeat(15), 33, 1);
+	text(" ".repeat(15), 31, 1);
+	text(" ".repeat(15), 32, 1);
+	text(" ".repeat(15), 33, 1);
 	equation = [];
 	shouldShootNumber = true;
-	if (mode == 'subtract') {
+	if (mode == "subtract") {
 		equation = [100];
 		objective = 100;
 		goal = objective;
 		shouldShootNumber = false;
 		displayEquation();
 	}
-	if (mode != 'tutorial') setObjective();
+	if (mode != "tutorial") setObjective();
 	else {
 		objective = Math.floor(Math.random() * 8 + 1);
 	}
@@ -420,16 +434,16 @@ async function startGame() {
 }
 
 function mainMenu() {
-	text('Select Game Mode!', 5, 5);
+	text("Select Game Mode!", 5, 5);
 
-	button('Level 0: Tutorial', 9, 5, async () => {
-		mode = 'tutorial';
-		mathSymbols = ['+'];
+	button("Level 0: Tutorial", 9, 5, async () => {
+		mode = "tutorial";
+		mathSymbols = ["+"];
 		symbOrNum = 0.7;
 		erase();
 		isPaused = true;
 		await alert(
-			'Move your mouse cursor to move the ship.\n\nClick your mouse to shoot.\n\nTry shooting an asteroid with a number on it!',
+			`Move your mouse cursor to move the ship.\n\nClick your mouse to shoot.\n\nUse the "a" and "d" keys to turn the ship.\n\nTry shooting an asteroid with a number on it!`,
 			4
 		);
 		await delay(1000);
@@ -437,49 +451,69 @@ function mainMenu() {
 		startGame();
 	});
 	if (progress >= 1) {
-		button('Level 1: Addition', 11, 5, () => {
-			mode = 'add';
-			mathSymbols = ['+'];
+		button("Level 1: Addition", 11, 5, () => {
+			mode = "add";
+			mathSymbols = ["+"];
 			symbOrNum = 0.7;
 			erase();
 			startGame();
+		});
+	} else {
+		button("Level 1: Addition", 11, 5, () => {
+			alert("Locked! Play previous levels to unlock this one.", 25, 4);
 		});
 	}
 	if (progress >= 2) {
-		button('Level 2: Subtract', 13, 5, () => {
-			mode = 'subtract';
-			mathSymbols = ['-'];
+		button("Level 2: Subtract", 13, 5, () => {
+			mode = "subtract";
+			mathSymbols = ["-"];
 			symbOrNum = 0.7;
 			erase();
 			startGame();
 		});
+	} else {
+		button("Level 2: Subtract", 13, 5, () => {
+			alert("Locked! Play previous levels to unlock this one.", 25, 4);
+		});
 	}
 	if (progress >= 3) {
-		button('Level 3: Add and Subtract', 15, 5, () => {
-			mode = 'add & subtract';
-			mathSymbols = ['+', '-'];
+		button("Level 3: Add and Subtract", 15, 5, () => {
+			mode = "add & subtract";
+			mathSymbols = ["+", "-"];
 			symbOrNum = 0.5;
 			erase();
 			startGame();
+		});
+	} else {
+		button("Level 3: Add and Subtract", 15, 5, () => {
+			alert("Locked! Play previous levels to unlock this one.", 25, 4);
 		});
 	}
 	if (progress >= 4) {
-		button('Level 4: Add, Subtract, Multiply, and Divide', 18, 5, () => {
-			mode = 'all';
-			mathSymbols = ['+', '-', 'x', '÷'];
+		button("Level 4: Add, Subtract, Multiply, and Divide", 18, 5, () => {
+			mode = "all";
+			mathSymbols = ["+", "-", "x", "÷"];
 			symbOrNum = 0.5;
 			erase();
 			startGame();
 		});
+	} else {
+		button("Level 4: Add, Subtract, Multiply, and Divide", 18, 5, () => {
+			alert("Locked! Play previous levels to unlock this one.", 25, 4);
+		});
 	}
 	if (progress >= 5) {
-		button('Level 5: fractions', 22, 5, () => {
-			mode = 'add & subtract';
-			numMode = 'fraction';
-			mathSymbols = ['+', '-'];
+		button("Level 5: fractions", 22, 5, () => {
+			mode = "add & subtract";
+			numMode = "fraction";
+			mathSymbols = ["+", "-"];
 			symbOrNum = 0.5;
 			erase();
 			startGame();
+		});
+	} else {
+		button("Level 5: fractions", 22, 5, () => {
+			alert("Locked! Play previous levels to unlock this one.", 25, 4);
 		});
 	}
 }
@@ -494,7 +528,12 @@ function draw() {
 		player.ghostTime--;
 	}
 	image(themes[theme].bg, 0, 0, 320, 544);
-	if (mode == 'tutorial' || mode == 'add' || mode == 'subtract' || mode == 'all') {
+	if (
+		mode == "tutorial" ||
+		mode == "add" ||
+		mode == "subtract" ||
+		mode == "all"
+	) {
 		push();
 		tint(255, starsOpacity);
 		if (starsOpacity <= 140) {
@@ -524,10 +563,10 @@ function draw() {
 			explosion.moveTowards(player.x, player.y, 1);
 		}
 
-		if (kb.pressing('a')) {
+		if (kb.pressing("a")) {
 			player.rotation -= 5;
 		}
-		if (kb.pressing('d')) {
+		if (kb.pressing("d")) {
 			player.rotation += 5;
 		}
 		player.angularVelocity = 0;
@@ -563,7 +602,7 @@ function draw() {
 				} else {
 					textSize(12);
 					drawText(asteroid.data, asteroid.x - 6, asteroid.y - 4);
-					drawText('_', asteroid.x - 6, asteroid.y - 2);
+					drawText("_", asteroid.x - 6, asteroid.y - 2);
 				}
 			}
 		}
@@ -589,12 +628,12 @@ function restartGame() {
 }
 
 function keyPressed() {
-	if (key == ' ') {
+	if (key == " ") {
 		isPaused = !isPaused;
 		if (isPaused) {
 			tint(128, 32);
 
-			button('restart', 20, 4, restartGame);
+			button("restart", 20, 4, restartGame);
 		} else {
 			noTint();
 			eraseRect(0, 0, 26, 28);
@@ -614,16 +653,18 @@ async function explosion(spark, asteroid) {
 	log(asteroid);
 	let data = asteroid.data;
 
-	if (data == '') {
+	if (data == "") {
 		placeAsteroid(asteroid);
 		return;
 	}
 
 	if (mathSymbols.includes(data) && shouldShootNumber) {
 		play(wrongHitSound);
-		if (mode == 'tutorial') {
+		if (mode == "tutorial") {
 			isPaused = true;
-			await alert("You can't shoot math symbols with blue lasers, only numbers!");
+			await alert(
+				"You can't shoot math symbols with blue lasers, only numbers!"
+			);
 			await delay(1000);
 			isPaused = false;
 		}
@@ -631,9 +672,11 @@ async function explosion(spark, asteroid) {
 	}
 	if (!mathSymbols.includes(data) && !shouldShootNumber) {
 		play(wrongHitSound);
-		if (mode == 'tutorial') {
+		if (mode == "tutorial") {
 			isPaused = true;
-			await alert("You can't shoot numbers with red lasers, only math symbols!");
+			await alert(
+				"You can't shoot numbers with red lasers, only math symbols!"
+			);
 			await delay(1000);
 			isPaused = false;
 		}
@@ -641,8 +684,8 @@ async function explosion(spark, asteroid) {
 	}
 	play(hitSound);
 	shouldShootNumber = !shouldShootNumber;
-	if (numMode == 'fraction' && !mathSymbols.includes(data)) {
-		data = data.replace('\n', '/');
+	if (numMode == "fraction" && !mathSymbols.includes(data)) {
+		data = data.replace("\n", "/");
 	}
 	equation.push(data);
 
@@ -652,9 +695,9 @@ async function explosion(spark, asteroid) {
 
 	if (result == goal) {
 		if (
-			(mode == 'tutorial' && objective >= 10) ||
-			(mode == 'add' && objective == 100) ||
-			(mode == 'subtract' && objective == 0)
+			(mode == "tutorial" && objective >= 10) ||
+			(mode == "add" && objective == 100) ||
+			(mode == "subtract" && objective == 0)
 		) {
 			gameWon();
 			return;
@@ -662,28 +705,30 @@ async function explosion(spark, asteroid) {
 		nextNumber();
 	} else if (equation.length > 14) {
 		// if there is too many numers on eq box
-		gameOver('Your equation is too long.');
+		gameOver("Your equation is too long.");
 	}
 
-	if ((mode == 'add' || mode == 'tutorial') && result > goal) {
-		gameOver('The result of your equation is higher than the objective.');
+	if ((mode == "add" || mode == "tutorial") && result > goal) {
+		gameOver("The result of your equation is higher than the objective.");
 		return;
 	}
-	if (mode == 'subtract' && result < goal) {
-		gameOver('The result of your equation is lower than the objective.');
+	if (mode == "subtract" && result < goal) {
+		gameOver("The result of your equation is lower than the objective.");
 		return;
 	}
 
 	placeAsteroid(asteroid);
 
-	if (mode == 'tutorial') {
+	if (mode == "tutorial") {
 		isPaused = true;
 
 		if (!shouldShootNumber) {
-			await alert('Nice hit!\n\nNow you can only shoot math symbols.\n\nTry shooting an addition (plus) sign!');
+			await alert(
+				"Nice hit!\n\nNow you can only shoot math symbols.\n\nTry shooting an addition (plus) sign!"
+			);
 		} else {
 			await alert(
-				'Great shot!\n\nNow you can only shoot numbers.\n\nThe goal of the game is to create an equation that results in the objective number in the box below.'
+				"Great shot!\n\nNow you can only shoot numbers.\n\nThe goal of the game is to create an equation that results in the objective number in the box below."
 			);
 		}
 		await delay(1000);
@@ -692,32 +737,32 @@ async function explosion(spark, asteroid) {
 }
 
 function displayEquation() {
-	if (numMode != 'fraction') {
-		text(' '.repeat(15), 32, 1); // erase
-		text(equation.join(''), 32, 1);
+	if (numMode != "fraction") {
+		text(" ".repeat(15), 32, 1); // erase
+		text(equation.join(""), 32, 1);
 	} else {
-		text(' '.repeat(15), 31, 1); // erase
-		text(' '.repeat(15), 32, 1);
-		text(' '.repeat(15), 33, 1);
+		text(" ".repeat(15), 31, 1); // erase
+		text(" ".repeat(15), 32, 1);
+		text(" ".repeat(15), 33, 1);
 
 		// equation -> ['3/4', '+', '1/2']
 		// 3 1
 		// -+-
 		// 4 2
 
-		let top = '';
-		let mid = '';
-		let low = '';
+		let top = "";
+		let mid = "";
+		let low = "";
 
 		for (let item of equation) {
 			if (item.length > 1) {
 				top += item[0];
-				mid += '-';
+				mid += "-";
 				low += item[2];
 			} else {
-				top += ' ';
+				top += " ";
 				mid += item;
-				low += ' ';
+				low += " ";
 			}
 		}
 		text(top, 31, 1);
@@ -738,7 +783,7 @@ function mousePressed() {
 		spark.speed = 5;
 
 		// ternary condition, used to write if + else  on one line
-		spark.ani = 'spark' + (shouldShootNumber ? 0 : 1);
+		spark.ani = "spark" + (shouldShootNumber ? 0 : 1);
 		if (spark) sparkCount++;
 		if (sparkCount == 10) {
 			sparkCount = 0;
@@ -784,7 +829,7 @@ function evaluateEquation() {
 		// so that we can edit it without changing the equation array
 		let jsEq = [...equation];
 
-		if (numMode == 'fraction') {
+		if (numMode == "fraction") {
 			let denoms = [];
 			for (let i = 0; i < equation.length; i += 2) {
 				denoms.push(Number(equation[i][2]));
@@ -807,22 +852,22 @@ function evaluateEquation() {
 		// 4 = eval(3+1)
 
 		for (let i = 1; i < jsEq.length; i += 2) {
-			if (jsEq[i] == '÷') {
+			if (jsEq[i] == "÷") {
 				let result = Math.round(jsEq[i - 1] / jsEq[i + 1]);
 				jsEq.splice(i - 1, 3, result);
 				i -= 2;
-			} else if (jsEq[i] == 'x') {
-				jsEq[i] = '*';
+			} else if (jsEq[i] == "x") {
+				jsEq[i] = "*";
 			}
 		}
 
 		goal = objective;
-		if (numMode == 'fraction') {
+		if (numMode == "fraction") {
 			let multiple = lcm / goal[2];
 			goal = goal[0] * multiple;
 		}
 
-		let result = eval(jsEq.join(''));
+		let result = eval(jsEq.join(""));
 		return result;
 	}
 }
