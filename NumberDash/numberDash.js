@@ -60,35 +60,42 @@ function preload() {
 	/* Asteroids */
 
 	allAsteroids = new Group();
-	for (let i = 0; i < 5; i++) {
-		let img = loadImage("img/asteroids/asteroid-" + i + ".png");
-		allAsteroids.addAni("atd" + i, img);
-	}
 
 	asteroids = new allAsteroids.Group();
 	asteroids.layer = 1;
+	for (let i = 0; i < 5; i++) {
+		let img = loadImage("img/asteroids/asteroid-" + i + ".png");
+		asteroids.addAni("atd" + i, img);
+	}
+
 	for (let i = 0; i < 60; i++) {
 		new asteroids.Sprite("atd" + (i % 5), i * 40, -20, 20);
 	}
 
+	// background asteroids
 	bgAsteroids = new allAsteroids.Group();
 	bgAsteroids.layer = 0;
 	bgAsteroids.collider = "none";
 	bgAsteroids.scale = 0.5;
 	for (let i = 0; i < 5; i++) {
 		let img = loadImage("img/dark_asteroids/asteroid-" + i + ".png");
-		bgAsteroids.addAni("atd" + i, img);
+		bgAsteroids.addAni("d_atd" + i, img);
 	}
 	for (let i = 0; i < 200; i++) {
-		new bgAsteroids.Sprite("atd" + (i % 5), i * 40, -20, 20);
+		new bgAsteroids.Sprite("d_atd" + (i % 5), i * 40, -20, 20);
 	}
 
+	// foreground asteroids
 	frAsteroids = new allAsteroids.Group();
 	frAsteroids.layer = 2;
 	frAsteroids.collider = "none";
 	frAsteroids.scale = 2;
 	for (let i = 0; i < 5; i++) {
-		new frAsteroids.Sprite("atd" + (i % 5), i * 40, -20, 20);
+		let img = loadImage("img/bright_asteroids/asteroid-" + i + ".png");
+		frAsteroids.addAni("b_atd" + i, img);
+	}
+	for (let i = 0; i < 5; i++) {
+		new frAsteroids.Sprite("b_atd" + (i % 5), i * 40, -20, 20);
 	}
 
 	explosions = new Group();
@@ -205,15 +212,17 @@ async function gameOver(msg) {
 	startGame();
 }
 
-async function gameWon(msg) {
+async function gameWon() {
 	isInGame = false;
 	time = 1;
-	progress = levels[mode] + 1;
-	if (mode == "subtract") {
-		progress = 5;
+	if (progress < 5) {
+		progress = levels[mode] + 1;
+		if (mode == "subtract") {
+			progress = 5;
+		}
 	}
 	storeItem("progress", progress);
-	await alert(msg + "You Won! Try doing the next lvl!");
+	await alert("You Won! Try doing the next level!");
 	mainMenu();
 }
 
@@ -263,13 +272,10 @@ function changeAsteroidData(asteroid) {
 }
 
 function placeAsteroid(asteroid) {
-	let placed = false;
-	// while (!placed || asteroid.overlap(asteroids)) {
-	while (!placed) {
-		asteroid.x = Math.floor(Math.random() * 320);
-		asteroid.y = Math.floor(Math.random() * -1600);
-		placed = true;
-	}
+	let asteroidFieldSize = 1600;
+	if (mode == "add") asteroidFieldSize = 3000;
+	asteroid.x = Math.floor(Math.random() * 320);
+	asteroid.y = Math.floor(Math.random() * -asteroidFieldSize);
 
 	if (asteroids.includes(asteroid)) {
 		changeAsteroidData(asteroid);
@@ -426,6 +432,9 @@ async function startGame() {
 	}
 	moreBg = false;
 	time = 60;
+	if (mode == "add") {
+		time = 120;
+	}
 	health = 288;
 
 	await delay(1000);
@@ -455,6 +464,7 @@ function mainMenu() {
 			mode = "add";
 			mathSymbols = ["+"];
 			symbOrNum = 0.7;
+
 			erase();
 			startGame();
 		});
