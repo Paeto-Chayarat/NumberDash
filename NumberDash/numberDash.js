@@ -119,8 +119,9 @@ let moreBg = true;
 let numMode = "num";
 let starsOpacity = 255;
 let starsShine = false;
-let progress = 0;
+let progress = 5;
 let goal;
+let healthY = 360;
 
 let levels = {
 	tutorial: 0,
@@ -146,7 +147,7 @@ function setup() {
 
 	player.ghostTime = 0;
 
-	player.overlap(asteroids, async (player, asteroid) => {
+	player.overlapping(asteroids, async (player, asteroid) => {
 		if (player.ghostTime == 0) {
 			placeAsteroid(asteroid);
 			play(crashSound);
@@ -483,7 +484,7 @@ function mainMenu() {
 		});
 	} else {
 		button("Level 2: Subtract", 13, 5, () => {
-			alert("Locked! Play previous levels to unlock this one.", 25, 4);
+			alert("Locked! Reach an objective of 100 in Level 1 to unlock", 25, 4);
 		});
 	}
 	if (progress >= 3) {
@@ -564,8 +565,18 @@ function draw() {
 	if (isInGame) {
 		if (health <= 0 || time <= 0) return;
 
+		bgProps.draw();
+		bgAsteroids.draw();
+
 		fill(255, 80, 70);
-		rect(4, 360, health, 3);
+
+		if (numMode == "fraction") {
+			healthY = 347;
+		} else {
+			healthY = 360;
+		}
+
+		rect(4, healthY, health, 3);
 
 		player.moveTowards(mouseX, mouseY, 0.1);
 
@@ -573,6 +584,17 @@ function draw() {
 			explosion.moveTowards(player.x, player.y, 1);
 		}
 
+		if (kb.presses(" ")) {
+			isPaused = !isPaused;
+			if (isPaused) {
+				tint(128, 32);
+
+				button("restart", 20, 4, restartGame);
+			} else {
+				noTint();
+				eraseRect(0, 0, 26, 28);
+			}
+		}
 		if (kb.pressing("a")) {
 			player.rotation -= 5;
 		}
@@ -583,8 +605,24 @@ function draw() {
 
 		if (!isPaused) updateSprites();
 
-		bgProps.draw();
-		bgAsteroids.draw();
+		if (mouse.presses()) {
+			let spark = sparks[sparkCount];
+			play(shootSound);
+			spark.x = player.x - 4;
+			spark.y = player.y;
+
+			spark.rotation = player.rotation + 180;
+			spark.direction = spark.rotation;
+			spark.speed = 5;
+
+			// ternary condition, used to write if + else  on one line
+			spark.ani = "spark" + (shouldShootNumber ? 0 : 1);
+			if (spark) sparkCount++;
+			if (sparkCount == 10) {
+				sparkCount = 0;
+			}
+		}
+
 		asteroids.draw();
 		sparks.draw();
 
@@ -627,6 +665,10 @@ function draw() {
 			}
 		}
 		frAsteroids.draw();
+
+		sparks.cull(100, (spark) => {
+			spark.speed = 0;
+		});
 	}
 }
 
@@ -635,20 +677,6 @@ function restartGame() {
 	noTint();
 	startGame();
 	eraseRect(0, 0, 26, 28);
-}
-
-function keyPressed() {
-	if (key == " ") {
-		isPaused = !isPaused;
-		if (isPaused) {
-			tint(128, 32);
-
-			button("restart", 20, 4, restartGame);
-		} else {
-			noTint();
-			eraseRect(0, 0, 26, 28);
-		}
-	}
 }
 
 async function explosion(spark, asteroid) {
@@ -781,26 +809,6 @@ function displayEquation() {
 	}
 }
 
-function mousePressed() {
-	if (isInGame && !isPaused) {
-		let spark = sparks[sparkCount];
-		play(shootSound);
-		spark.x = player.x - 4;
-		spark.y = player.y;
-
-		spark.rotation = player.rotation + 180;
-		spark.direction = spark.rotation;
-		spark.speed = 5;
-
-		// ternary condition, used to write if + else  on one line
-		spark.ani = "spark" + (shouldShootNumber ? 0 : 1);
-		if (spark) sparkCount++;
-		if (sparkCount == 10) {
-			sparkCount = 0;
-		}
-	}
-}
-
 // examples:
 // objective: 7/6
 
@@ -878,6 +886,7 @@ function evaluateEquation() {
 		}
 
 		let result = eval(jsEq.join(""));
+		if (numMode != "fraction") result = round(result);
 		return result;
 	}
 }
