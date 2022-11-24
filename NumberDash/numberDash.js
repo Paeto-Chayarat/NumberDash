@@ -68,7 +68,7 @@ function preload() {
 		asteroids.addAni("atd" + i, img);
 	}
 
-	for (let i = 0; i < 60; i++) {
+	for (let i = 0; i < 30; i++) {
 		new asteroids.Sprite("atd" + (i % 5), i * 40, -20, 20);
 	}
 
@@ -81,7 +81,7 @@ function preload() {
 		let img = loadImage("img/dark_asteroids/asteroid-" + i + ".png");
 		bgAsteroids.addAni("d_atd" + i, img);
 	}
-	for (let i = 0; i < 200; i++) {
+	for (let i = 0; i < 100; i++) {
 		new bgAsteroids.Sprite("d_atd" + (i % 5), i * 40, -20, 20);
 	}
 
@@ -122,6 +122,7 @@ let starsShine = false;
 let progress = 5;
 let goal;
 let healthY = 360;
+let placedAsteroids = 0;
 
 let levels = {
 	tutorial: 0,
@@ -182,14 +183,15 @@ function placeAsteroids() {
 	// for (let i = 0; i < allAsteroids.length; i++) {
 	// 	placeAsteroid(allAsteroids[i]);
 	// }
-	for (let i = 0; i < asteroids.length; i++) {
-		placeAsteroid(asteroids[i]);
-	}
+
 	for (let i = 0; i < bgAsteroids.length; i++) {
 		placeAsteroid(bgAsteroids[i]);
 	}
 	for (let i = 0; i < frAsteroids.length; i++) {
 		placeAsteroid(frAsteroids[i]);
+	}
+	for (let i = 0; i < asteroids.length; i++) {
+		placeAsteroid(asteroids[i]);
 	}
 }
 
@@ -273,28 +275,39 @@ function changeAsteroidData(asteroid) {
 }
 
 function placeAsteroid(asteroid) {
-	let asteroidFieldSize = 1600;
-	if (mode == "add") asteroidFieldSize = 3000;
-	asteroid.x = Math.floor(Math.random() * 320);
+	let asteroidFieldSize = 640;
+	if (mode == "add") {
+		asteroidFieldSize = 1000;
+	}
+
 	asteroid.y = Math.floor(Math.random() * -asteroidFieldSize);
+
+	asteroid.rotation = random(0, 360);
+	asteroid.rotationSpeed = random(-1, 1);
 
 	if (asteroids.includes(asteroid)) {
 		changeAsteroidData(asteroid);
-		asteroid.velocity.x = random(-0.1, 0.1);
-		asteroid.velocity.y = 0.8;
-		asteroid.rotation = random(0, 360);
-		asteroid.rotationSpeed = random(-1, 1);
+		asteroid.speed = random(0.8, 0.9);
+		placedAsteroids++;
+		log(placedAsteroids);
 	} else if (bgAsteroids.includes(asteroid)) {
-		asteroid.velocity.x = random(-0.1, 0.1);
-		asteroid.velocity.y = 0.4;
-		asteroid.rotation = random(0, 360);
-		asteroid.rotationSpeed = random(-1, 1);
+		asteroid.speed = random(0.3, 0.5);
 	} else if (frAsteroids.includes(asteroid)) {
-		asteroid.velocity.x = random(-0.1, 0.1);
-		asteroid.velocity.y = 1.2;
-		asteroid.rotation = random(0, 360);
-		asteroid.rotationSpeed = random(-1, 1);
+		asteroid.speed = random(1.1, 1.3);
 	}
+
+	// if (placedAsteroids < 60) {
+	// normal
+	asteroid.x = Math.floor(random(0, 320));
+	asteroid.moveTo(random(asteroid.x - 80, asteroid.x + 80), 461);
+	// } else if (placedAsteroids < 120) {
+	// asteroids come from the left
+	// asteroid.x = random(320, 640);
+	// asteroid.moveTo(random(-100, 200), 461);
+	// }
+	// asteroids come from the right
+	// asteroid.x = random(-320, 0);
+	// asteroid.moveTo(random(100, 500), 461);
 }
 
 function setObjective() {
@@ -314,8 +327,8 @@ function setObjective() {
 		} else {
 			objective = Math.floor(Math.random() * 100);
 		}
-		if (objective > 100 && mode == "add") {
-			objective = 100;
+		if (objective > 50 && mode == "add") {
+			objective = 50;
 		}
 		if (objective < 0 && mode == "subtract") {
 			objective = 0;
@@ -414,12 +427,16 @@ async function startGame() {
 	text(" ".repeat(15), 33, 1);
 	equation = [];
 	shouldShootNumber = true;
+	placedAsteroids = 0;
+
 	if (mode == "subtract") {
-		equation = [100];
-		objective = 100;
+		equation = [50];
+		objective = 50;
 		goal = objective;
 		shouldShootNumber = false;
 		displayEquation();
+	} else {
+		objective = 0;
 	}
 	if (mode != "tutorial") setObjective();
 	else {
@@ -578,10 +595,10 @@ function draw() {
 
 		rect(4, healthY, health, 3);
 
-		player.moveTowards(mouseX, mouseY, 0.1);
+		player.moveTowards(mouse, 0.1);
 
 		for (let explosion of explosions) {
-			explosion.moveTowards(player.x, player.y, 1);
+			explosion.moveTowards(player, 1);
 		}
 
 		if (kb.presses(" ")) {
@@ -605,7 +622,7 @@ function draw() {
 
 		if (!isPaused) updateSprites();
 
-		if (mouse.presses()) {
+		if (mouse.presses() && !isPaused) {
 			let spark = sparks[sparkCount];
 			play(shootSound);
 			spark.x = player.x - 4;
@@ -734,7 +751,7 @@ async function explosion(spark, asteroid) {
 	if (result == goal) {
 		if (
 			(mode == "tutorial" && objective >= 10) ||
-			(mode == "add" && objective == 100) ||
+			(mode == "add" && objective == 50) ||
 			(mode == "subtract" && objective == 0)
 		) {
 			gameWon();
