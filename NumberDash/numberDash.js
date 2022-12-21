@@ -123,6 +123,7 @@ let progress = 5;
 let goal;
 let healthY = 360;
 let placedAsteroids = 0;
+let difficulty = "normal";
 
 let levels = {
 	tutorial: 0,
@@ -278,6 +279,9 @@ function placeAsteroid(asteroid) {
 	let asteroidFieldSize = 640;
 	if (mode == "add") {
 		asteroidFieldSize = 1000;
+	}
+	if (difficulty == "normal") {
+		asteroidFieldSize = 2000;
 	}
 
 	asteroid.y = Math.floor(Math.random() * -asteroidFieldSize);
@@ -457,13 +461,31 @@ async function startGame() {
 
 	await delay(1000);
 	isInGame = true;
-	timer();
+	if (difficulty == "hard") {
+		timer();
+	}
 }
 
 function mainMenu() {
 	text("Select Game Mode!", 5, 5);
 
-	button("Level 0: Tutorial", 9, 5, async () => {
+	if (difficulty == "normal") {
+		textRect(27, 4, 3, 8);
+	} else {
+		textRect(27, 18, 3, 6);
+	}
+
+	button("Normal", 28, 5, () => {
+		difficulty = "normal";
+		textRect(27, 4, 3, 8);
+		textRect(27, 18, 3, 6, "solid", " ");
+	});
+	button("Hard", 28, 19, () => {
+		difficulty = "hard";
+		textRect(27, 4, 3, 8, "solid", " ");
+		textRect(27, 18, 3, 6);
+	});
+	button("Level 0: Tutorial", 7, 5, async () => {
 		mode = "tutorial";
 		mathSymbols = ["+"];
 		symbOrNum = 0.7;
