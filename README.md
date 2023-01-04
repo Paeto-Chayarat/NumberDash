@@ -2,9 +2,12 @@
 
 TODO :
 
-1.) Make level 1 easier ex. less asteriods and the
-2.) Make an easy version for gigis playhouse
-3.) The Tutorial has a bug when hitting okay the ship shoots
+1.) Make an easy version for gigis playhouse
+
+- make a really easy difficulty
+
+  2.) delete asteriod or sparks if it goes off screen
+  3.) make final objective for add&subtract mode
 
 EZ) Mkae asteroids moves sideways so it looks like were moving in different directions.
 4.) add a scoring system

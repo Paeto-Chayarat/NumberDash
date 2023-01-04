@@ -124,6 +124,8 @@ let goal;
 let healthY = 360;
 let placedAsteroids = 0;
 let difficulty = "normal";
+let maxGoal = 20;
+let objCount = 0;
 
 let levels = {
 	tutorial: 0,
@@ -241,7 +243,7 @@ function nextNumber() {
 			changeAsteroidData(asteroid);
 		}
 	}
-
+	objCount++;
 	setObjective();
 	displayObjective();
 	time += 30;
@@ -331,8 +333,8 @@ function setObjective() {
 		} else {
 			objective = Math.floor(Math.random() * 100);
 		}
-		if (objective > 50 && mode == "add") {
-			objective = 50;
+		if (objective > maxGoal && mode == "add") {
+			objective = maxGoal;
 		}
 		if (objective < 0 && mode == "subtract") {
 			objective = 0;
@@ -434,8 +436,8 @@ async function startGame() {
 	placedAsteroids = 0;
 
 	if (mode == "subtract") {
-		equation = [50];
-		objective = 50;
+		equation = [maxGoal];
+		objective = maxGoal;
 		goal = objective;
 		shouldShootNumber = false;
 		displayEquation();
@@ -469,22 +471,11 @@ async function startGame() {
 function mainMenu() {
 	text("Select Game Mode!", 5, 5);
 
-	if (difficulty == "normal") {
-		textRect(27, 4, 3, 8);
-	} else {
-		textRect(27, 18, 3, 6);
-	}
+	button("Settings", 28, 12, () => {
+		erase();
+		settings();
+	});
 
-	button("Normal", 28, 5, () => {
-		difficulty = "normal";
-		textRect(27, 4, 3, 8);
-		textRect(27, 18, 3, 6, "solid", " ");
-	});
-	button("Hard", 28, 19, () => {
-		difficulty = "hard";
-		textRect(27, 4, 3, 8, "solid", " ");
-		textRect(27, 18, 3, 6);
-	});
 	button("Level 0: Tutorial", 7, 5, async () => {
 		mode = "tutorial";
 		mathSymbols = ["+"];
@@ -566,6 +557,37 @@ function mainMenu() {
 			alert("Locked! Play previous levels to unlock this one.", 25, 4);
 		});
 	}
+}
+
+function settings() {
+	text("select difficulty", 6, 6);
+	button("Normal", 10, 5, () => {
+		difficulty = "normal";
+		textRect(9, 4, 3, 8);
+		textRect(9, 18, 3, 6, "solid", " ");
+	});
+	button("Hard", 10, 19, () => {
+		difficulty = "hard";
+		textRect(9, 4, 3, 8, "solid", " ");
+		textRect(9, 18, 3, 6);
+	});
+
+	if (difficulty == "normal") {
+		textRect(9, 4, 3, 8);
+	} else {
+		textRect(9, 18, 3, 6);
+	}
+	button("set max objective", 15, 5, async () => {
+		maxGoal = await prompt("enter a number", 17, 0, 28);
+		if (typeof maxGoal != "number") {
+			await alert("invalid input! numbers only", 17, 0, 28);
+		}
+		log(maxGoal);
+	});
+	button("Back to home", 24, 8, () => {
+		erase();
+		mainMenu();
+	});
 }
 
 function draw() {
@@ -773,8 +795,9 @@ async function explosion(spark, asteroid) {
 	if (result == goal) {
 		if (
 			(mode == "tutorial" && objective >= 10) ||
-			(mode == "add" && objective == 50) ||
-			(mode == "subtract" && objective == 0)
+			(mode == "add" && objective == maxGoal) ||
+			(mode == "subtract" && objective == 0) ||
+			(mode == "add & subtract" && objCount > 5)
 		) {
 			gameWon();
 			return;
