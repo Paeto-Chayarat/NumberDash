@@ -126,6 +126,7 @@ let placedAsteroids = 0;
 let difficulty = "normal";
 let maxGoal = 20;
 let objCount = 0;
+let tutorialText = [false, false, false, false, false, false];
 
 let levels = {
 	tutorial: 0,
@@ -159,13 +160,14 @@ function setup() {
 			explosion.life = 20;
 			health -= 42;
 			player.ghostTime = 180;
-			if (mode == "tutorial") {
+			if (mode == "tutorial" && !tutorialText[2]) {
 				isPaused = true;
 				await alert(
 					"Your health will decrease if you hit an asteriod, check your health bar at the bottom (red line)"
 				);
 				await delay(1000);
 				isPaused = false;
+				tutorialText[2] = true;
 			}
 			if (health < 0) {
 				gameOver("You got hit too many times, your ship was destroyed.");
@@ -229,6 +231,7 @@ async function gameWon() {
 	}
 	storeItem("progress", progress);
 	await alert("You Won! Try doing the next level!");
+	erase();
 	mainMenu();
 }
 
@@ -428,6 +431,7 @@ function makeTheme() {
 }
 
 async function startGame() {
+	eraseRect(1, 17, 1, 1);
 	text(" ".repeat(15), 31, 1);
 	text(" ".repeat(15), 32, 1);
 	text(" ".repeat(15), 33, 1);
@@ -471,7 +475,7 @@ async function startGame() {
 function mainMenu() {
 	text("Select Game Mode!", 5, 5);
 
-	button("Settings", 28, 12, () => {
+	button("Settings", 1, 17, () => {
 		erase();
 		settings();
 	});
@@ -531,11 +535,14 @@ function mainMenu() {
 		});
 	}
 	if (progress >= 4) {
-		button("Level 4: Add, Subtract, Multiply, and Divide", 18, 5, () => {
+		button("Level 4: Add, Subtract, Multiply, and Divide", 18, 5, async () => {
 			mode = "all";
 			mathSymbols = ["+", "-", "x", "÷"];
 			symbOrNum = 0.5;
 			erase();
+			await alert(
+				"For division, if the result is not a whole number it will be rounded to the nearest integer"
+			);
 			startGame();
 		});
 	} else {
@@ -797,7 +804,9 @@ async function explosion(spark, asteroid) {
 			(mode == "tutorial" && objective >= 10) ||
 			(mode == "add" && objective == maxGoal) ||
 			(mode == "subtract" && objective == 0) ||
-			(mode == "add & subtract" && objCount > 5)
+			(mode == "add & subtract" && objCount > 5) ||
+			(mode == "all" && objCount > 2) ||
+			(mode == "fractions" && objCount > 5)
 		) {
 			gameWon();
 			return;
@@ -820,19 +829,27 @@ async function explosion(spark, asteroid) {
 	placeAsteroid(asteroid);
 
 	if (mode == "tutorial") {
-		isPaused = true;
-
 		if (!shouldShootNumber) {
-			await alert(
-				"Nice hit!\n\nNow you can only shoot math symbols.\n\nTry shooting an addition (plus) sign!"
-			);
+			if (!tutorialText[0]) {
+				isPaused = true;
+				await alert(
+					"Nice hit!\n\nNow you can only shoot math symbols.\n\nTry shooting an addition (plus) sign!"
+				);
+				tutorialText[0] = true;
+				await delay(1000);
+				isPaused = false;
+			}
 		} else {
-			await alert(
-				"Great shot!\n\nNow you can only shoot numbers.\n\nThe goal of the game is to create an equation that results in the objective number in the box below."
-			);
+			if (!tutorialText[1]) {
+				isPaused = true;
+				await alert(
+					"Great shot!\n\nNow you can only shoot numbers.\n\nThe goal of the game is to create an equation that results in the objective number in the box below."
+				);
+				tutorialText[1] = true;
+				await delay(1000);
+				isPaused = false;
+			}
 		}
-		await delay(1000);
-		isPaused = false;
 	}
 }
 
