@@ -180,6 +180,8 @@ function setup() {
 	}
 
 	sparks.collide(asteroids, explosion);
+
+	world.autoStep = false;
 	mainMenu();
 }
 
@@ -671,7 +673,10 @@ function draw() {
 		}
 		player.angularVelocity = 0;
 
-		if (!isPaused) updateSprites();
+		if (!isPaused) {
+			allSprites.update();
+			world.step();
+		}
 
 		if (mouse.presses() && !isPaused) {
 			let spark = sparks[sparkCount];
