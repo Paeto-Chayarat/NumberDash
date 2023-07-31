@@ -126,7 +126,7 @@ let placedAsteroids = 0;
 let difficulty = "normal";
 let maxGoal = 20;
 let objCount = 0;
-let tutorialText = [false, false, false, false, false, false];
+let tutorialtxt = [false, false, false, false, false, false];
 
 let levels = {
 	tutorial: 0,
@@ -160,14 +160,14 @@ function setup() {
 			explosion.life = 20;
 			health -= 42;
 			player.ghostTime = 180;
-			if (mode == "tutorial" && !tutorialText[2]) {
+			if (mode == "tutorial" && !tutorialtxt[2]) {
 				isPaused = true;
 				await alert(
 					"Your health will decrease if you hit an asteriod, check your health bar at the bottom (red line)"
 				);
 				await delay(1000);
 				isPaused = false;
-				tutorialText[2] = true;
+				tutorialtxt[2] = true;
 			}
 			if (health < 0) {
 				gameOver("You got hit too many times, your ship was destroyed.");
@@ -203,7 +203,7 @@ function placeAsteroids() {
 }
 
 async function timer() {
-	text(time.toString().padStart(3, " "), 32, 24);
+	txt(time.toString().padStart(3, " "), 32, 24);
 	await delay(1000);
 	time--;
 	if (!isInGame) return;
@@ -349,16 +349,16 @@ function setObjective() {
 
 function displayObjective() {
 	if (numMode != "fraction") {
-		textRect(31, 0, 3, 17);
-		textRect(31, 17, 3, 6);
-		textRect(31, 23, 3, 5);
-		text(("=" + objective).padEnd(4, " "), 32, 18);
+		txtRect(31, 0, 3, 17);
+		txtRect(31, 17, 3, 6);
+		txtRect(31, 23, 3, 5);
+		txt(("=" + objective).padEnd(4, " "), 32, 18);
 	} else {
-		textRect(30, 0, 5, 17);
-		textRect(30, 17, 5, 6);
-		textRect(30, 23, 5, 5);
-		text("=", 32, 18);
-		text(objective.replace("/", "\n-\n").padEnd(4, " "), 31, 19);
+		txtRect(30, 0, 5, 17);
+		txtRect(30, 17, 5, 6);
+		txtRect(30, 23, 5, 5);
+		txt("=", 32, 18);
+		txt(objective.replace("/", "\n-\n").padEnd(4, " "), 31, 19);
 	}
 }
 
@@ -434,9 +434,9 @@ function makeTheme() {
 
 async function startGame() {
 	eraseRect(1, 17, 1, 1);
-	text(" ".repeat(15), 31, 1);
-	text(" ".repeat(15), 32, 1);
-	text(" ".repeat(15), 33, 1);
+	txt(" ".repeat(15), 31, 1);
+	txt(" ".repeat(15), 32, 1);
+	txt(" ".repeat(15), 33, 1);
 	equation = [];
 	shouldShootNumber = true;
 	placedAsteroids = 0;
@@ -475,7 +475,7 @@ async function startGame() {
 }
 
 function mainMenu() {
-	text("Select Game Mode!", 5, 5);
+	txt("Select Game Mode!", 5, 5);
 
 	button("Settings", 1, 17, () => {
 		erase();
@@ -569,22 +569,22 @@ function mainMenu() {
 }
 
 function settings() {
-	text("select difficulty", 6, 6);
+	txt("select difficulty", 6, 6);
 	button("Normal", 10, 5, () => {
 		difficulty = "normal";
-		textRect(9, 4, 3, 8);
-		textRect(9, 18, 3, 6, "solid", " ");
+		txtRect(9, 4, 3, 8);
+		txtRect(9, 18, 3, 6, "solid", " ");
 	});
 	button("Hard", 10, 19, () => {
 		difficulty = "hard";
-		textRect(9, 4, 3, 8, "solid", " ");
-		textRect(9, 18, 3, 6);
+		txtRect(9, 4, 3, 8, "solid", " ");
+		txtRect(9, 18, 3, 6);
 	});
 
 	if (difficulty == "normal") {
-		textRect(9, 4, 3, 8);
+		txtRect(9, 4, 3, 8);
 	} else {
-		textRect(9, 18, 3, 6);
+		txtRect(9, 18, 3, 6);
 	}
 	button("set max objective", 15, 5, async () => {
 		maxGoal = await prompt("enter a number", 17, 0, 28);
@@ -835,22 +835,22 @@ async function explosion(spark, asteroid) {
 
 	if (mode == "tutorial") {
 		if (!shouldShootNumber) {
-			if (!tutorialText[0]) {
+			if (!tutorialtxt[0]) {
 				isPaused = true;
 				await alert(
 					"Nice hit!\n\nNow you can only shoot math symbols.\n\nTry shooting an addition (plus) sign!"
 				);
-				tutorialText[0] = true;
+				tutorialtxt[0] = true;
 				await delay(1000);
 				isPaused = false;
 			}
 		} else {
-			if (!tutorialText[1]) {
+			if (!tutorialtxt[1]) {
 				isPaused = true;
 				await alert(
 					"Great shot!\n\nNow you can only shoot numbers.\n\nThe goal of the game is to create an equation that results in the objective number in the box below."
 				);
-				tutorialText[1] = true;
+				tutorialtxt[1] = true;
 				await delay(1000);
 				isPaused = false;
 			}
@@ -860,12 +860,12 @@ async function explosion(spark, asteroid) {
 
 function displayEquation() {
 	if (numMode != "fraction") {
-		text(" ".repeat(15), 32, 1); // erase
-		text(equation.join(""), 32, 1);
+		txt(" ".repeat(15), 32, 1); // erase
+		txt(equation.join(""), 32, 1);
 	} else {
-		text(" ".repeat(15), 31, 1); // erase
-		text(" ".repeat(15), 32, 1);
-		text(" ".repeat(15), 33, 1);
+		txt(" ".repeat(15), 31, 1); // erase
+		txt(" ".repeat(15), 32, 1);
+		txt(" ".repeat(15), 33, 1);
 
 		// equation -> ['3/4', '+', '1/2']
 		// 3 1
@@ -887,9 +887,9 @@ function displayEquation() {
 				low += " ";
 			}
 		}
-		text(top, 31, 1);
-		text(mid, 32, 1);
-		text(low, 33, 1);
+		txt(top, 31, 1);
+		txt(mid, 32, 1);
+		txt(low, 33, 1);
 	}
 }
 
