@@ -719,11 +719,11 @@ function draw() {
 			if (!isPaused) {
 				if (asteroid.data.toString().length == 1) {
 					textSize(20);
-					drawText(asteroid.data, asteroid.x - 6, asteroid.y + 4);
+					text(asteroid.data, asteroid.x - 6, asteroid.y + 4);
 				} else {
 					textSize(12);
-					drawText(asteroid.data, asteroid.x - 6, asteroid.y - 4);
-					drawText("_", asteroid.x - 6, asteroid.y - 2);
+					text(asteroid.data, asteroid.x - 6, asteroid.y - 4);
+					text("_", asteroid.x - 6, asteroid.y - 2);
 				}
 			}
 		}
