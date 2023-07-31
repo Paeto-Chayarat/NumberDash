@@ -300,7 +300,6 @@ function placeAsteroid(asteroid) {
 		changeAsteroidData(asteroid);
 		asteroid.speed = random(0.8, 0.9);
 		placedAsteroids++;
-		log(placedAsteroids);
 	} else if (bgAsteroids.includes(asteroid)) {
 		asteroid.speed = random(0.3, 0.5);
 	} else if (frAsteroids.includes(asteroid)) {
@@ -402,7 +401,6 @@ function makeTheme() {
 			tpClouds.vel.y = random(0.15, 0.25);
 			tpClouds.mirrorX = Math.random() > 0.5;
 			tpClouds.mirrorY = Math.random() > 0.5;
-			log(tpClouds.y);
 
 			let clouds = new bgProps.Sprite(
 				themes.desert.clouds,
@@ -415,7 +413,6 @@ function makeTheme() {
 			clouds.vel.y = random(0.15, 0.25);
 			clouds.mirrorX = Math.random() > 0.5;
 			clouds.mirrorY = Math.random() > 0.5;
-			log(clouds.y);
 		}
 	}
 	if (mode == "all") {
@@ -591,7 +588,6 @@ function settings() {
 		if (typeof maxGoal != "number") {
 			await alert("invalid input! numbers only", 17, 0, 28);
 		}
-		log(maxGoal);
 	});
 	button("Back to home", 24, 8, () => {
 		erase();
@@ -761,7 +757,6 @@ async function explosion(spark, asteroid) {
 	asteroid.velocity.x = 0;
 	asteroid.velocity.y = 0.2;
 
-	log(asteroid);
 	let data = asteroid.data;
 
 	if (data == "") {
@@ -940,7 +935,6 @@ function evaluateEquation() {
 				lcm = findLCM(Number(equation[i][2]), lcm);
 			}
 			lcm = findLCM(lcm, objective[2]);
-			log(lcm);
 			for (let i = 0; i < equation.length; i += 2) {
 				let multiple = lcm / equation[i][2];
 				jsEq[i] = jsEq[i][0] * multiple;
